@@ -1,12 +1,10 @@
 import React from 'react';
-import { View, SafeAreaView } from 'react-native';
+import { View, SafeAreaView, Text } from 'react-native';
+import Routes from './routes'
 
-// import { Container } from './styles';
 
 export default function App() {
   return (
-    <SafeAreaView>
-      <View/>
-    </SafeAreaView>
+    <Routes />
   );
 }
