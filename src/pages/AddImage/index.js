@@ -1,14 +1,18 @@
-import React, { Component, useEffect, useState } from 'react'
+import React, { Component} from 'react'
 import { Text, View, TextInput, Button, Image } from 'react-native'
 import ImagePicker from 'react-native-image-picker';
 import getRealm from '../../services/realm'
 
-
 module.exports = class AddCategoryPage extends Component {
+
+  static navigationOptions ={
+    title: 'Adicionar Imagem'
+  }
   
   constructor(props){
     super(props);
     this.state = {
+      nameCategory: this.props.navigation.getParam('nameCategory'),
       idCategory: this.props.navigation.getParam('idCategory', 'null'),
       name: '', 
       uri: ' ',
@@ -17,6 +21,15 @@ module.exports = class AddCategoryPage extends Component {
   }
   
   async saveRealm(category){
+
+    if(category.name == '' || category.name == ' '){
+      alert("Necessário adicionar um nome para a imagem")
+      return
+    }else if(category.uri == ' '){
+      alert("Necessário Adicionar uma Imagem")
+      return
+    }
+
     try{
       const realm = await getRealm()
       const id = category.idCategory;
@@ -36,6 +49,9 @@ module.exports = class AddCategoryPage extends Component {
       realm.write(() => {
         realm.objects('Category')[id].images.push(newData)
       });
+      this.setState({name: ' '})
+      this.setState({uri: ' '})
+      alert("Imagem adicionado com sucesso")
   
     }catch (err){
       alert(err)
@@ -45,10 +61,9 @@ module.exports = class AddCategoryPage extends Component {
   async handleAddImage (category){
     const realm = await getRealm()
     this.setState({data: realm.objects('Category')})
+
     try{
       this.saveRealm(category)
-      this.setState({name: ' '})
-      this.setState({uri: ' '})
     }catch (err){
       alert(err)
     }
@@ -69,10 +84,7 @@ module.exports = class AddCategoryPage extends Component {
         console.log('User cancelled image picker');
       } else if (response.error) {
         console.log('ImagePicker Error: ', response.error);
-      } else if (response.customButton) {
-        console.log('User tapped custom button: ', response.customButton);
-        alert(response.customButton);
-      } else {
+      }else {
         let source = { uri: 'data:image/jpeg;base64,' + response.data };
         this.setState({
           uri: source.uri,
@@ -81,12 +93,11 @@ module.exports = class AddCategoryPage extends Component {
     });
   };
 
-
   render() {
     return (
       <>
      <View style={{alignItems: 'center'}}>
-    <Text>Página para adicionar imagens idCategory: {this.state.idCategory}</Text> 
+    <Text>Página para adicionar imagens em {this.state.nameCategory}</Text> 
       </View>
       <View style={{flexDirection: 'row', marginTop: 10}}>
         <Text>Nome: </Text>
@@ -106,7 +117,7 @@ module.exports = class AddCategoryPage extends Component {
         <Text>{this.state.name}</Text>
       </View>
       <View style={{marginTop: 70}}>
-        <Button title="Adicionar Categoria" onPress={() => this.handleAddImage(this.state)}/>
+        <Button title="Adicionar" onPress={() => this.handleAddImage(this.state)}/>
       </View>
     </>
     )

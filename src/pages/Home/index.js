@@ -1,13 +1,19 @@
 import React, { Component } from 'react'
-import {BackHandler ,TouchableOpacity, Image ,Text, View, Button, FlatList } from 'react-native'
+import { BackHandler, TouchableOpacity, Image, Text, View, Button, FlatList } from 'react-native'
 import getRealm from '../../services/realm'
 
-
 module.exports = class HomePage extends Component {
+
+  static navigationOptions = {
+    title: 'Inicio'
+  }
 
   constructor(props){
     super(props);
     this.state = {
+      nameCategory: '',
+      idCategory: 0,
+      isCategory: true,
       data: []
     }
     this.loadRealm()
@@ -22,6 +28,7 @@ module.exports = class HomePage extends Component {
 
   handleBackPress = () => {
     this.loadRealm()
+    this.setState({isCategory: true})
     return true;
   };
 
@@ -32,13 +39,19 @@ module.exports = class HomePage extends Component {
     return data;
   }
   
+  setDate = (item) => {
+    this.setState({idCategory: item.id})
+    this.setState({nameCategory: item.name})
+    this.setState({data: this.state.data[this.state.data.findIndex((obj) => obj.id === item.id)].images})
+    this.setState({isCategory: false})
+  }
   
   renderItem = ({item}) => {
     if(item.isCategory){
       return(
         <>
         <TouchableOpacity onPress={() => {
-          this.setState({data: this.state.data[this.state.data.findIndex((obj) => obj.id === item.id)].images})
+          this.setDate(item)
         }}>
           <Image style ={{height: 100, width: 100}} 
           source={{uri: item.uri}}
@@ -52,14 +65,13 @@ module.exports = class HomePage extends Component {
     }else{
       return(
       <>
-      <Button title="add Image" onPress={() => this.props.navigation.navigate('AddImage', {idCategory: item.idCategory})}/>
       <TouchableOpacity>
-        <Image style={{height: 100, width: 100}} 
+        <Image 
+        style={{height: 100, width: 100}} 
         source={{uri: item.uri}}
         />
         <Text>{item.name}</Text>
         <Text>id: {item.id}</Text>
-
       </TouchableOpacity>
       </>
       );
@@ -69,7 +81,10 @@ module.exports = class HomePage extends Component {
   render() {
     return (
       <View>
-        <Button title="add Category" onPress={() => this.props.navigation.navigate('AddCategory')}/>
+        {this.state.isCategory ? 
+        <Button title="Adicionar categoria" onPress={() => this.props.navigation.navigate('AddCategory')}/> :
+        <Button title="Adicionar imagem" onPress={() => this.props.navigation.navigate('AddImage', {idCategory: this.state.idCategory, nameCategory: this.state.nameCategory})}/>
+        }
         <FlatList 
         data = {this.state.data}
         keyExtractor = {(item) => String(item.id)}
