@@ -6,7 +6,8 @@ export default class CategorySchema {
       id: {type: 'int', indexed: true},
       name: 'string',
       uri: 'string',
-      isCategory: 'bool'
+      images: {type: 'list', objectType: 'Images'} ,
+      isCategory: {type: 'bool', default: true}
     }
   }
-}
+};

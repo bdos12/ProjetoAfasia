@@ -5,10 +5,22 @@ import getRealm from '../../services/realm'
 
 async function saveRealm(category){
   const realm = await getRealm()
+  const categoryID = realm.objects('Category').length;
+  const imagesID = realm.objects('Images').length;
+
   const data = {
-    id: realm.objects('Category').length,
+    id: categoryID,
     name: category.name,
     uri: category.uri,
+    images: [
+      {
+        id: imagesID,
+        idCategory: categoryID,
+        name: category.name,
+        uri: category.uri,
+        isCategory: false
+      },
+    ],
     isCategory: true,
   }
 
