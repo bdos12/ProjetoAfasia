@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
-import { BackHandler, TouchableOpacity, Image, Text, View, Button, FlatList } from 'react-native'
+import {Alert, BackHandler, TouchableOpacity, Image, Text, View, Button, FlatList } from 'react-native'
 import getRealm from '../../services/realm'
+import deleteItem from './deleteItem'
 
 module.exports = class HomePage extends Component {
 
@@ -45,6 +46,11 @@ module.exports = class HomePage extends Component {
     this.setState({data: this.state.data[this.state.data.findIndex((obj) => obj.id === item.id)].images})
     this.setState({isCategory: false})
   }
+
+  delItens = (item) => {
+    deleteItem(item)
+    this.loadRealm()
+  }
   
   renderItem = ({item}) => {
     if(item.isCategory){
@@ -52,8 +58,16 @@ module.exports = class HomePage extends Component {
         <>
         <TouchableOpacity onPress={() => {
           this.setDate(item)
-        }}>
-          <Image style ={{height: 100, width: 100}} 
+        }}
+        onLongPress = {() => Alert.alert(
+          'Teste ', 
+          'Apagar categoria ' + item.name + '?', 
+        [
+          {text: 'Sim', onPress: () => this.delItens(item)},
+          {text: 'Não'}
+        ]
+        )} delayLongPress ={300}>
+          <Image style = {{height: 100, width: 100}} 
           source={{uri: item.uri}}
           />
           <Text>{item.name}</Text>
@@ -65,7 +79,17 @@ module.exports = class HomePage extends Component {
     }else{
       return(
       <>
-      <TouchableOpacity>
+      <TouchableOpacity
+      onLongPress = {() => Alert.alert(
+        'Teste ', 
+        'Apagar o item ' + item.name + '?', 
+      [
+        {text: 'Sim', onPress: () => this.delItens(item)},
+        {text: 'Não'}
+      ]
+      )} 
+      delayLongPress = {300}
+      >
         <Image 
         style={{height: 100, width: 100}} 
         source={{uri: item.uri}}
@@ -81,9 +105,9 @@ module.exports = class HomePage extends Component {
   render() {
     return (
       <View>
-        {this.state.isCategory ? 
-        <Button title="Adicionar categoria" onPress={() => this.props.navigation.navigate('AddCategory')}/> :
-        <Button title="Adicionar imagem" onPress={() => this.props.navigation.navigate('AddImage', {idCategory: this.state.idCategory, nameCategory: this.state.nameCategory})}/>
+        {this.state.isCategory 
+        ? <Button title="Adicionar categoria" onPress={() => this.props.navigation.navigate('AddCategory')}/> 
+        : <Button title="Adicionar imagem" onPress={() => this.props.navigation.navigate('AddImage', {idCategory: this.state.idCategory, nameCategory: this.state.nameCategory})}/>
         }
         <FlatList 
         data = {this.state.data}
@@ -95,3 +119,4 @@ module.exports = class HomePage extends Component {
     )
   }
 }
+

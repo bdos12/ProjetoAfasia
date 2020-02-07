@@ -33,10 +33,7 @@ module.exports = class AddCategoryPage extends Component {
     try{
       const realm = await getRealm()
       const id = category.idCategory;
-      var idImage = realm.objects('Images').length
-      while (!idImage){
-        id = id + 1
-      }
+      let idImage = realm.objects('Images').length
 
       const newData = {
           id: idImage,

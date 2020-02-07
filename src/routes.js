@@ -1,6 +1,7 @@
 import {createAppContainer} from 'react-navigation'
 import {createStackNavigator} from 'react-navigation-stack';
 
+//Import de páginas da aplicação
 import HomePage from './pages/Home/index'
 import AddCategoryPage from './pages/AddCategory/index'
 import AddImagePage from './pages/AddImage/index'
