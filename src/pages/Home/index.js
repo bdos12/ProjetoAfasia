@@ -47,7 +47,7 @@ module.exports = class HomePage extends Component {
     this.setState({isCategory: false})
   }
 
-  delItens = (item) => {
+  handleDeleteItem = (item) => {
     deleteItem(item)
     this.loadRealm()
   }
@@ -63,7 +63,7 @@ module.exports = class HomePage extends Component {
           'Teste ', 
           'Apagar categoria ' + item.name + '?', 
         [
-          {text: 'Sim', onPress: () => this.delItens(item)},
+          {text: 'Sim', onPress: () => this.handleDeleteItem(item)},
           {text: 'Não'}
         ]
         )} delayLongPress ={300}>
@@ -84,7 +84,7 @@ module.exports = class HomePage extends Component {
         'Teste ', 
         'Apagar o item ' + item.name + '?', 
       [
-        {text: 'Sim', onPress: () => this.delItens(item)},
+        {text: 'Sim', onPress: () => this.handleDeleteItem(item)},
         {text: 'Não'}
       ]
       )} 
