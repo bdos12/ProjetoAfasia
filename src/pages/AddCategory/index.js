@@ -69,6 +69,8 @@ module.exports = class AddCategoryPage extends Component {
   chooseFile = () => {
     var options = {
       title: 'Selecionar Imagem',
+      takePhotoButtonTitle: 'Tirar uma foto',
+      chooseFromLibraryButtonTitle: 'Escolher da galeria',
       storageOptions: {
         skipBackup: true,
         path: 'images',
