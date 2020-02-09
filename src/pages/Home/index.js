@@ -91,7 +91,7 @@ module.exports = class HomePage extends Component {
         )} 
         delayLongPress ={300} 
         style={{margin: 25, width: 130, height: 130}}
-
+        
         >
           <Image 
           style ={{height: 130, width: 130}} 

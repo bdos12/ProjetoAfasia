@@ -54,7 +54,7 @@ module.exports = class AddCategoryPage extends Component {
       alert(err)
     }
   }
-
+  
   async handleAddImage (category){
     const realm = await getRealm()
     this.setState({data: realm.objects('Category')})

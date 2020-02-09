@@ -37,7 +37,6 @@ module.exports = class AddCategoryPage extends Component {
         ],
         isCategory: true,
       }
-
       realm.write(() => {
         realm.create('Category', data)
       });
