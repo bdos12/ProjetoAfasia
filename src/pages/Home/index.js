@@ -17,7 +17,6 @@ module.exports = class HomePage extends Component {
       isCategory: true,
       data: [],
       imagesTTS: [],
-      textTTS: ''
     }
     this.loadRealm()
   }
@@ -51,20 +50,17 @@ module.exports = class HomePage extends Component {
 
   addTTS = (obj) => {
 
-    let item = {
+    const newData = {
       id: Math.random() * 10,
       name: obj.name,
-      uri: obj.uri}
-    
-    let addText = obj.name;
-    
-    let tempText = this.state.textTTS;
-    tempText = tempText + ' ' + addText;
+      uri: obj.uri,
+      idCategory: obj.idCategory,
+      isCategory: false
+    }
 
     let tempImage = this.state.imagesTTS;
-    tempImage.push(item)
+    tempImage.push(newData)
 
-    this.setState({textTTS: tempText})
     this.setState({imagesTTS: tempImage})
 
   }
@@ -137,14 +133,21 @@ module.exports = class HomePage extends Component {
         <Image style = {{height: 60, width: 60, margin: 2}} 
         source = {{uri: obj.item.uri}}
         />
+        <Text>{obj.item.name}</Text>
       </View>
     );
   }
 
+  deleteTTs = () => {
+    let temp = this.state.imagesTTS;
+    temp.pop();
+    this.setState({imagesTTS: temp})
+  }
+  
   render() {
     return (
       <>
-      <View style={{backgroundColor: '#ccc', width:'100%', height: 100}}>
+      <View style={{backgroundColor: '#ccc', width:'100%', height: 100, flexDirection: 'row'}}>
         <FlatList 
         data = {this.state.imagesTTS}
         extraData = {this.state}
@@ -152,9 +155,12 @@ module.exports = class HomePage extends Component {
         renderItem = {this.renderTTS}
         keyExtractor = {(item) => String(item.id)}
         />
-        <>
-        <Text >{this.state.textTTS}</Text>
-        </>
+        <View style={{height: '100%', width: '20%', backgroundColor: '#bbb', }}>
+          <Button title='TTs' onPress={() => {}} />
+          <TouchableOpacity onLongPress ={() => alert('Deseja apagar tudo?')} delayLongPress={3000}>
+            <Button title='Apagar' onPress={() => this.deleteTTs()}/>
+          </TouchableOpacity>
+        </View>
       </View>
       <SafeAreaView style={styles.item}>
         {this.state.isCategory
@@ -172,7 +178,7 @@ module.exports = class HomePage extends Component {
         keyExtractor = {(item) => String(item.id)}
         renderItem = {this.renderItem}
         extraData = {this.state}
-        horizontal = {true}
+        numColumns = {2}
         />
       </SafeAreaView>
       </>
@@ -200,16 +206,3 @@ const styles = StyleSheet.create({
   },
 })
 
-function createRows(data, columns) {
-  const rows = Math.floor(data.length / columns); // [A]
-  let lastRowElements = data.length - rows * columns; // [B]
-  while (lastRowElements !== columns) { // [C]
-    data.push({ // [D]
-      id: `empty-${lastRowElements}`,
-      name: `empty-${lastRowElements}`,
-      empty: true
-    });
-    lastRowElements += 1; // [E]
-  }
-  return data; // [F]
-}
