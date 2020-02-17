@@ -2,11 +2,15 @@ import React, { Component } from 'react'
 import {SafeAreaView ,StyleSheet ,Alert, BackHandler, TouchableOpacity, Image, Text, View, Button, FlatList } from 'react-native'
 import getRealm from '../../services/realm'
 import deleteItem from './deleteItem'
+import speak from '../../services/tts'
 
 module.exports = class HomePage extends Component {
 
   static navigationOptions = { //Propriedades da navegação
-    title: 'Inicio'
+    title: 'Inicio',
+    headerStyle: {
+      backgroundColor: '#b8daf5'
+    }
   }
 
   constructor(props){
@@ -100,14 +104,15 @@ module.exports = class HomePage extends Component {
         <TouchableOpacity style = {{margin: 25, alignItems: 'center'}}
         onPress = {() => this.handleAddItem()}
         >
-          <Image style={{width: 130, height: 130}} source={require('../../icons/add-circle-512.png')}/>
+          <Image style={styles.Images} source={require('../../icons/icon_add.png')}/>
           <Text>{item.name}</Text>
         </TouchableOpacity>
         </>
       )
     }else if(item.isCategory){
       return(
-        <>
+        <View style={styles.ViewItens}>
+
         <TouchableOpacity onPress={() => {
           this.setDate(item)
         }}
@@ -118,23 +123,24 @@ module.exports = class HomePage extends Component {
             {text: 'Sim', onPress: () => this.handleDeleteItem(item)},
             {text: 'Não'}
           ]
-        )} 
-        delayLongPress ={300} 
-        style={{margin: 25, width: 130, height: 130}}
-        
-        >
+          )} 
+          delayLongPress ={300} 
+          style={styles.Images}
+          
+          >
           <Image 
-          style ={{height: 130, width: 130}} 
+          style ={styles.Images} 
           source={{uri: item.uri}}
           />
           <Text style={{textAlign: 'center'}}>{item.name}</Text>
 
         </TouchableOpacity>
-        </>
+        </View>
       );
     }else{
       return(
-      <>
+      <View style={styles.ViewItens}>
+
       <TouchableOpacity
       onLongPress = {() => Alert.alert(
         'Teste ', 
@@ -147,19 +153,20 @@ module.exports = class HomePage extends Component {
       delayLongPress = {300}
       
       onPress = {() => this.addTTS(item)}
-      style={{margin: 25, width: 130, height: 130}}
+      style={styles.Images}
       >
         <Image 
-        style={{width: 130, height: 130}} 
+        style={styles.Images} 
         source={{uri: item.uri}}
         />
         <Text style={{textAlign: 'center'}}>{item.name}</Text>
       </TouchableOpacity>
-      </>
+      </View>
+
       );
     }
   }
-  
+
   addTTS = (obj) => { //Adicionar item na barra TTs
 
     const newData = {
@@ -182,25 +189,45 @@ module.exports = class HomePage extends Component {
   
   renderTTS = obj => { //Renderizar itens da barra TTs
     return(
-      <View>
+      <TouchableOpacity onLongPress={(item) => Alert.alert('Apagar', 'Deseja apagar?', 
+      [
+        {text: 'Sim', onPress: (item) => this.deleteTTs(item)},
+        {text: 'Não'}
+      ]
+      )}
+      delayLongPress={1500}
+      >
         <Image style = {{height: 60, width: 60, margin: 2}} 
         source = {{uri: obj.item.uri}}
         />
-        {/* <Text>{obj.item.name}</Text> */}
-      </View>
+        <Text>{obj.item.name}</Text>
+      </TouchableOpacity>
     );
   }
   
-  deleteTTs = () => { //Deletar itens da barra TTs
+  deleteTTs = (obj) => { //Deletar itens da barra TTs
     let temp = this.state.imagesTTS;
-    temp.pop();
+    if (obj){
+      temp.splice(obj)
+    }else{
+      temp.pop();
+    }
     this.setState({imagesTTS: temp})
   }
   
+  handleSpeak = () => {
+    let temp = this.state.imagesTTS
+    let text = ''
+    temp.forEach((item) => {
+      text = text + ' ' + item.name
+    })
+    speak(text)
+  }
+
   render() { //Render principal
     return (
       <>
-      <View style={{backgroundColor: '#ccc', width:'100%', height: 100, flexDirection: 'row'}}>
+      <View style={styles.TTs}>
         <FlatList 
         data = {this.state.imagesTTS}
         extraData = {this.state}
@@ -208,11 +235,24 @@ module.exports = class HomePage extends Component {
         renderItem = {this.renderTTS}
         keyExtractor = {(item) => String(item.id)}
         />
-        <Text>{this.state.text}</Text>
-        <View style={{height: '100%', width: '20%', backgroundColor: '#ccc', }}>
-          <Button title='TTs' onPress={() => {}} />
-          <TouchableOpacity onLongPress ={() => alert('Deseja apagar tudo?')} delayLongPress={3000}>
-            <Button title='Apagar' onPress={() => this.deleteTTs()}/>
+        <View style={styles.TTsView}>
+          <TouchableOpacity onPress={() => this.handleSpeak()}>
+            <Image style={{width: 50, height: 47}} 
+            source={require('../../icons/icon_speak.png')}/>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+          onPress ={() => this.deleteTTs()} 
+          onLongPress = {() => Alert.alert('Apagar', 'Deseja apagar tudo?', 
+          [
+            {text: 'Sim', onPress: () => this.setState({imagesTTS: []})},
+            {text: 'Não'}
+          ]
+          )}
+          delayLongPress = {1500}
+          >
+            <Image style={{width: 50, height: 47}} 
+            source={require('../../icons/icon_delete.png')}/>
           </TouchableOpacity>
         </View>
       </View>
@@ -231,22 +271,36 @@ module.exports = class HomePage extends Component {
 }
 
 const styles = StyleSheet.create({
+  ViewItens: {
+    width: 130, 
+    height: 130, 
+    backgroundColor: '#fff',
+    margin: 25
+  },
   item: {
     flex: 1, 
     flexDirection: 'row', 
     flexBasis: 0,
-  },
-  ButtonAdd: {
-    margin: 25, 
-    height: 100, 
-    width: 100
-  },
-  TextAdd:{
-    textAlign: 'center'
+    backgroundColor: '#b8daf5'
   },
   Images: {
-    height: 100, 
-    width: 100
+    height: 130, 
+    width: 130,
   },
+  TTs: {
+    backgroundColor: '#fff',
+    width: '100%',
+    height: 100,
+    flexDirection: 'row',
+    borderColor: '#5fa2d4',
+    borderWidth: 5,
+    overflow: 'visible'
+  },
+  TTsView: {
+    height: '100%', 
+    width: '20%', 
+    backgroundColor: '#fff', 
+    alignItems: 'flex-end',
+  }
 })
 
