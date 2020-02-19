@@ -4,7 +4,7 @@ import ImagePicker from 'react-native-image-picker';
 import getRealm from '../../services/realm'
 
 module.exports = class AddCategoryPage extends Component {
-  static navigationOptions ={
+  static navigationOptions = {
     title: 'Adicionar Categoria'
   }
 
