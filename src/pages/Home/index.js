@@ -51,9 +51,11 @@ module.exports = class HomePage extends Component {
   }
 
   handleBackPress = () => {
-    this.loadRealm();
-    this.setState({isCategory: true});
-    return true;
+    
+      this.loadRealm();
+      this.setState({isCategory: true});
+      return true;
+
   };
 
   async loadRealm() {
@@ -108,19 +110,10 @@ module.exports = class HomePage extends Component {
   handleAddItem = () => {
     // Navegação de telas entre addCategory e addImage
     this.setState({isVisible: true})
-    // {
-      
-    //   this.state.isCategory
-    //     ? this.props.navigation.navigate('AddCategory')
-    //     : this.props.navigation.navigate('AddImage', {
-    //         idCategory: this.state.idCategory,
-    //         nameCategory: this.state.nameCategory,
-    //       });
-    // }
   };
 
-  renderItem = ({item}) => {
-    // Rendeizar os itens da FlatList
+  renderItem = ({item}) => { // Rendeizar os itens da FlatList
+    
     if (item.isAdd) {
       return (
         <>
@@ -176,9 +169,7 @@ module.exports = class HomePage extends Component {
     );
   };
 
-  addTTS = obj => {
-    // Adicionar item na barra TTs
-
+  addTTS = obj => { // Adicionar item na barra TTs
     const newData = {
       id: Math.random() * 10,
       name: obj.name,
@@ -196,8 +187,7 @@ module.exports = class HomePage extends Component {
     this.setState({imagesTTS: tempImage});
   };
 
-  renderTTS = obj => {
-    // Renderizar itens da barra TTs
+  renderTTS = obj => { // Renderizar itens da barra TTs
     return (
       <TouchableOpacity
         onLongPress={item =>
@@ -216,8 +206,7 @@ module.exports = class HomePage extends Component {
     );
   };
 
-  deleteTTs = obj => {
-    // Deletar itens da barra TTs
+  deleteTTs = obj => { // Deletar itens da barra TTs
     const temp = this.state.imagesTTS;
     if (obj) {
       temp.pop();
@@ -286,12 +275,17 @@ module.exports = class HomePage extends Component {
   handleSaveRealm = () => { //Salvar no banco de dados
     let item = {
       name: this.state.name,
-      uri: this.state.uri
+      uri: this.state.uri,
+      idCategory: this.state.idCategory
     }
-    this.saveRealm(item)
+    if (this.state.isCategory){
+      this.saveRealm(item, 1)
+    }else {
+      this.saveRealm(item, 2)
+    }
   }
 
-  async saveRealm(category){
+  async saveRealm(category, option){ //Salvar categoria/imagem no banco de dados
     if(category.name == '' || category.name == ' '){
       alert("Necessário adicionar um nome para a categoria")
       return
@@ -300,44 +294,66 @@ module.exports = class HomePage extends Component {
       return
     }
     try{
-      const realm = await getRealm()
-      const categoryID = realm.objects('Category').length;
-      const imagesID = realm.objects('Images').length;
-      const data = {
-        id: categoryID,
-        name: category.name,
-        uri: category.uri,
-        images: [
-          {
-            id: imagesID,
-            idCategory: categoryID,
+      let data = {}
+      if(option === 1){
+        const realm = await getRealm()
+        const categoryID = realm.objects('Category').length;
+        const imagesID = realm.objects('Images').length;
+        data = {
+          id: categoryID,
+          name: category.name,
+          uri: category.uri,
+          images: [
+            {
+              id: imagesID,
+              idCategory: categoryID,
+              name: category.name,
+              uri: category.uri,
+              isCategory: false
+            },
+          ],
+          isCategory: true,
+        }
+
+        realm.write(() => {
+          realm.create('Category', data)
+        });
+
+        alert("Categoria adicionada com sucesso")
+      }else {
+        const realm = await getRealm()
+        const id = category.idCategory;
+        let idImage = realm.objects('Images').length
+
+        data = {
+            id: idImage,
             name: category.name,
             uri: category.uri,
+            idCategory: category.idCategory,
             isCategory: false
-          },
-        ],
-        isCategory: true,
+          }
+          realm.write(() => {
+            realm.objects('Category')[id].images.push(data)
+          });
+          alert("Imagem adicionado com sucesso")
       }
-      realm.write(() => {
-        realm.create('Category', data)
-      });
+
+      
       this.setState({name: ' '})
       this.setState({uri: ' '})
       this.loadRealm()
-      alert("Categoria adicionada com sucesso")
+      
   
     }catch (err){
       alert(err)
     }
   }
 
-  render() {
-    // Render principal
+  render() { //Render princial
     return (
       <>
       <Modal isVisible = {this.state.isVisible}
       style={{
-        // backgroundColor: '#ff0',
         maxHeight: 500,
         maxWidth: 500,
         alignSelf: 'center',}}>
