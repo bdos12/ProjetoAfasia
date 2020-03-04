@@ -3,7 +3,7 @@ import {createStackNavigator} from 'react-navigation-stack';
 
 //Import de páginas da aplicação
 import HomePage from './pages/Home/index'
-import AddCategoryPage from './pages/AddCategory/index'
+// import AddCategoryPage from './pages/AddCategory/index'
 import AddImagePage from './pages/AddImage/index'
 
 const AppNavigator = createStackNavigator(
@@ -11,9 +11,9 @@ const AppNavigator = createStackNavigator(
     Home: {
       screen: HomePage
     },
-    AddCategory:{
-      screen: AddCategoryPage
-    },
+    // AddCategory:{
+    //   screen: AddCategoryPage
+    // },
     AddImage:{
       screen: AddImagePage
     }

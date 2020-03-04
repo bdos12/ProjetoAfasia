@@ -7,3 +7,4 @@ export default function getRealm() {
     schema: [CategorySchema, ImagesSchema],
   })
 }
+  
