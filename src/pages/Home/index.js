@@ -34,6 +34,7 @@ module.exports = class HomePage extends Component {
       text: '',
       nameCategory: '',
       idCategory: 0,
+      positionCategory: 0,
       isCategory: true,
       data: [],
       imagesTTS: [],
@@ -61,7 +62,7 @@ module.exports = class HomePage extends Component {
   async loadRealm() {
     // Carregar itens do banco de dados
     const realm = await getRealm();
-    const data = realm.objects('Category').sorted('id', true);
+    const data = realm.objects('Category');
 
     const add = {
       id: Math.random() + 100,
@@ -96,6 +97,8 @@ module.exports = class HomePage extends Component {
     data.push(...temp);
 
     this.setState({idCategory: item.id});
+    this.setState({positionCategory: this.state.data.findIndex(obj => obj.id === item.id)});
+
     this.setState({nameCategory: item.name});
     this.setState({data});
     this.setState({isCategory: false});
@@ -125,7 +128,6 @@ module.exports = class HomePage extends Component {
               source={require('./icons/icon_add.png')}
             />
             <Text style = {styles.textItens}>{item.name}</Text>
-          <Text style={styles.textItens}>{item.id}</Text>
 
           </TouchableOpacity>
         </>
@@ -148,7 +150,6 @@ module.exports = class HomePage extends Component {
             style={styles.Images}>
             <Image style={styles.Images} source={{uri: item.uri}} />
             <Text style={styles.textItens}>{item.name}</Text>
-          <Text style={styles.textItens}>{item.id}</Text>
 
           </TouchableOpacity>
         </View>
@@ -168,7 +169,6 @@ module.exports = class HomePage extends Component {
           style={styles.Images}>
           <Image style={styles.Images} source={{uri: item.uri}} />
           <Text style={styles.textItens}>{item.name}</Text>
-          <Text style={styles.textItens}>{item.id}</Text>
 
         </TouchableOpacity>
       </View>
@@ -303,8 +303,8 @@ module.exports = class HomePage extends Component {
       let data = {}
       if(option === 1){
         const realm = await getRealm()
-        let categoryID = realm.objects('Category').length;
-        const imagesID = realm.objects('Images').length;
+        let categoryID = Math.floor(Math.random() * 1000);
+        const imagesID = Math.floor(Math.random() * 1000);
 
         data = {
           id: categoryID,
@@ -329,8 +329,8 @@ module.exports = class HomePage extends Component {
         alert("Categoria adicionada com sucesso")
       }else {
         const realm = await getRealm()
-        const id = category.idCategory;
-        let idImage = realm.objects('Images').length
+        const id = this.state.positionCategory;
+        let idImage = Math.floor(Math.random() * 1000)
 
         data = {
             id: idImage,
@@ -340,7 +340,7 @@ module.exports = class HomePage extends Component {
             isCategory: false
           }
           realm.write(() => {
-            realm.objects('Category')[id].images.push(data)
+            realm.objects('Category')[id - 1].images.push(data)
           });
           alert("Imagem adicionado com sucesso")
       }
@@ -464,7 +464,7 @@ module.exports = class HomePage extends Component {
             keyExtractor={item => String(item.id)}
             renderItem={this.renderItem}
             extraData={this.state}
-            numColumns={6}
+            numColumns={5}
             />
         </SafeAreaView>
       </>
