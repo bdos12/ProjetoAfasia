@@ -46,18 +46,22 @@ module.exports = class HomePage extends Component {
 
   componentDidMount() {
     this.BackHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      this.handleBackPress,
+      'hardwareBackPress', () => 
+      {
+        this.loadRealm()
+        this.setState({isCategory: true})
+        return true
+      },
     );
   }
 
-  handleBackPress = () => {
+  // handleBackPress = () => {
     
-      this.loadRealm();
-      this.setState({isCategory: true});
-      return true;
+  //     this.loadRealm();
+  //     this.setState({isCategory: true});
+  //     return true;
 
-  };
+  // };
 
   async loadRealm() {
     // Carregar itens do banco de dados
@@ -348,6 +352,7 @@ module.exports = class HomePage extends Component {
     }
   }
 
+  
   render() { //Render princial
     return (
       <>
@@ -355,7 +360,10 @@ module.exports = class HomePage extends Component {
       style={{
         maxHeight: 500,
         maxWidth: 500,
-        alignSelf: 'center',}}>
+        alignSelf: 'center',}}
+        onBackButtonPress = {() => this.setState({isVisible: false})}
+        >
+          
         <View style={styles.container}>
         {
           this.state.select ? 
