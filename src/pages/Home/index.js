@@ -66,7 +66,7 @@ module.exports = class HomePage extends Component {
     const add = {
       id: Math.random() + 100,
       name: 'Adicionar',
-      uri: require('../../icons/add-circle-512.png'),
+      uri: require('./icons/add-circle-512.png'),
       isAdd: true,
     };
 
@@ -88,7 +88,7 @@ module.exports = class HomePage extends Component {
     const add = {
       id: Math.random() + 100,
       name: 'Adicionar',
-      uri: require('../../icons/add-circle-512.png'),
+      uri: require('./icons/add-circle-512.png'),
       isAdd: true,
     };
 
@@ -122,9 +122,11 @@ module.exports = class HomePage extends Component {
             onPress={() => this.handleAddItem()}>
             <Image
               style={styles.Images}
-              source={require('../../icons/icon_add.png')}
+              source={require('./icons/icon_add.png')}
             />
-            <Text>{item.name}</Text>
+            <Text style = {styles.textItens}>{item.name}</Text>
+          <Text style={styles.textItens}>{item.id}</Text>
+
           </TouchableOpacity>
         </>
       );
@@ -145,7 +147,9 @@ module.exports = class HomePage extends Component {
             delayLongPress={300}
             style={styles.Images}>
             <Image style={styles.Images} source={{uri: item.uri}} />
-            <Text style={{textAlign: 'center'}}>{item.name}</Text>
+            <Text style={styles.textItens}>{item.name}</Text>
+          <Text style={styles.textItens}>{item.id}</Text>
+
           </TouchableOpacity>
         </View>
       );
@@ -163,7 +167,9 @@ module.exports = class HomePage extends Component {
           onPress={() => this.addTTS(item)}
           style={styles.Images}>
           <Image style={styles.Images} source={{uri: item.uri}} />
-          <Text style={{textAlign: 'center'}}>{item.name}</Text>
+          <Text style={styles.textItens}>{item.name}</Text>
+          <Text style={styles.textItens}>{item.id}</Text>
+
         </TouchableOpacity>
       </View>
     );
@@ -201,7 +207,7 @@ module.exports = class HomePage extends Component {
           style={styles.imagesTTS}
           source={{uri: obj.item.uri}}
         />
-        <Text>{obj.item.name}</Text>
+        <Text style={styles.textItens}>{obj.item.name}</Text>
       </TouchableOpacity>
     );
   };
@@ -297,8 +303,9 @@ module.exports = class HomePage extends Component {
       let data = {}
       if(option === 1){
         const realm = await getRealm()
-        const categoryID = realm.objects('Category').length;
+        let categoryID = realm.objects('Category').length;
         const imagesID = realm.objects('Images').length;
+
         data = {
           id: categoryID,
           name: category.name,
@@ -362,20 +369,20 @@ module.exports = class HomePage extends Component {
           this.state.select ? 
         <View>
           <View style={styles.viewTitle}>
-            <Text>Adicionar Categoria</Text>
+            <Text style={styles.viewTitleText}>Adicionar</Text>
           </View>
           <View style={styles.viewMiddle}>
             <View style={styles.viewMiddleIcon} >
               <TouchableOpacity onPress={() => this.chooseFile(1)}>
                 <Image style ={styles.iconImage} source={require('./icons/icon_camera.png')} />
               </TouchableOpacity>
-                <Text>Camera</Text>
+                <Text style={styles.middleIconText} >Câmera</Text>
             </View>
             <View style={styles.viewMiddleIcon}>
               <TouchableOpacity onPress={() => this.chooseFile(2)}>
                 <Image style ={styles.iconImage} source={require('./icons/icon_gallery.png')} />
               </TouchableOpacity>
-                <Text>Galeria</Text>
+                <Text style={styles.middleIconText}>Galeria</Text>
             </View>
           </View>
           <View style={styles.viewBottom}>
@@ -431,7 +438,7 @@ module.exports = class HomePage extends Component {
             <TouchableOpacity onPress={() => this.handleSpeak()}>
               <Image
                 style={styles.iconsTTS}
-                source={require('../../icons/icon_speak.png')}
+                source={require('./icons/icon_speak.png')}
               />
             </TouchableOpacity>
 
@@ -446,7 +453,7 @@ module.exports = class HomePage extends Component {
               delayLongPress={1500}>
               <Image
                 style={styles.iconsTTS}
-                source={require('../../icons/icon_delete.png')}
+                source={require('./icons/icon_delete.png')}
                 />
             </TouchableOpacity>
           </View>
@@ -472,6 +479,12 @@ const styles = StyleSheet.create({
     height: 170,
     backgroundColor: '#fff',
     margin: 25,
+  },
+  textItens : {
+    textAlign: 'center',
+    alignItems: 'center',
+    alignContent: 'center',
+    fontSize: 18,
   },
   imagesTTS: {
     height: 110, 
@@ -518,6 +531,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center'
     // backgroundColor: '#f00'
   },
+  viewTitleText: {
+    fontSize: 30,
+    marginTop: '20%'
+  },
   viewMiddle: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -529,6 +546,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     margin: '10%',
     // backgroundColor: '#fa0'
+  },
+  middleIconText: {
+    fontSize: 20
   },
   viewBottom: {
     flexDirection: 'row',
