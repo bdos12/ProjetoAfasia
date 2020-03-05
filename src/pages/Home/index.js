@@ -55,14 +55,6 @@ module.exports = class HomePage extends Component {
     );
   }
 
-  // handleBackPress = () => {
-    
-  //     this.loadRealm();
-  //     this.setState({isCategory: true});
-  //     return true;
-
-  // };
-
   async loadRealm() {
     // Carregar itens do banco de dados
     const realm = await getRealm();
