@@ -29,10 +29,10 @@ module.exports = class HomePage extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      nome: '',
+      nome: ' ',
       uri: ' ',
       text: '',
-      nameCategory: '',
+      nameCategory: ' ',
       idCategory: 0,
       positionCategory: 0,
       isCategory: true,
@@ -62,7 +62,6 @@ module.exports = class HomePage extends Component {
   async loadRealm() {
     // Carregar itens do banco de dados
     const realm = await getRealm();
-    const data = realm.objects('Category');
 
     const add = {
       id: Math.random() + 100,
@@ -71,12 +70,13 @@ module.exports = class HomePage extends Component {
       isAdd: true,
     };
 
-    const itens = [];
-    itens.push(add);
-    itens.push(...data);
+    let itens = []
+    itens.push(add)
+    itens.push(...realm.objects('Category'))
 
-    this.setState({data: itens});
-    return data;
+
+    this.setState({data: itens})
+
   }
 
   setDate = item => {
@@ -94,7 +94,7 @@ module.exports = class HomePage extends Component {
     };
 
     data.push(add);
-    data.push(...temp);
+    data.push(... temp);
 
     this.setState({idCategory: item.id});
     this.setState({positionCategory: this.state.data.findIndex(obj => obj.id === item.id)});
@@ -104,9 +104,9 @@ module.exports = class HomePage extends Component {
     this.setState({isCategory: false});
   };
 
-  handleDeleteItem = item => {
+  async handleDeleteItem (item) {
     // Deletar item do Banco de dados
-    deleteItem(item);
+    await deleteItem(item);
     this.loadRealm();
   };
 
@@ -116,7 +116,6 @@ module.exports = class HomePage extends Component {
   };
 
   renderItem = ({item}) => { // Rendeizar os itens da FlatList
-    
     if (item.isAdd) {
       return (
         <>
@@ -292,13 +291,6 @@ module.exports = class HomePage extends Component {
   }
 
   async saveRealm(category, option){ //Salvar categoria/imagem no banco de dados
-    if(category.name == '' || category.name == ' '){
-      alert("Necessário adicionar um nome para a categoria")
-      return
-    }else if(category.uri == ' '){
-      alert("Necessário Adicionar uma Imagem")
-      return
-    }
     try{
       let data = {}
       if(option === 1){
@@ -326,7 +318,7 @@ module.exports = class HomePage extends Component {
           realm.create('Category', data)
         });
 
-        alert("Categoria adicionada com sucesso")
+        Alert.alert('Sucesso','Categoria adicionada com sucesso')
       }else {
         const realm = await getRealm()
         const id = this.state.positionCategory;
@@ -342,7 +334,7 @@ module.exports = class HomePage extends Component {
           realm.write(() => {
             realm.objects('Category')[id - 1].images.push(data)
           });
-          alert("Imagem adicionado com sucesso")
+          Alert.alert('Sucesso','Imagem adicionado com sucesso')
       }
 
       
@@ -352,7 +344,7 @@ module.exports = class HomePage extends Component {
       
   
     }catch (err){
-      alert(err)
+      Alert.alert('Erro', 'É necessário adicionar uma imagem e um nome')
     }
   }
 
