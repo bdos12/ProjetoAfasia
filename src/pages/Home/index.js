@@ -502,8 +502,9 @@ const styles = StyleSheet.create({
     margin: 4
   },
   iconsTTS: {
+    margin: 2,
     width: 80, 
-    height: 80
+    height: 90
   },
   item: {
     flex: 1,
@@ -518,7 +519,7 @@ const styles = StyleSheet.create({
   TTs: {
     backgroundColor: '#fff',
     width: '100%',
-    height: '25%',
+    height: '30%',
     flexDirection: 'row',
     borderColor: '#5fa2d4',
     borderWidth: 5,
@@ -538,7 +539,7 @@ const styles = StyleSheet.create({
   viewTitle: {
     height: '10%',
     alignItems:'center',
-    justifyContent: 'center'
+    justifyContent: 'center',
     // backgroundColor: '#f00'
   },
   viewTitleText: {
