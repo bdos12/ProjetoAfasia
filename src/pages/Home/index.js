@@ -16,6 +16,9 @@ import deleteItem from './deleteItem';
 import speak from '../../services/tts';
 import Modal from "react-native-modal";
 import ImagePicker from 'react-native-image-picker';
+import ImageResizer from 'react-native-image-resizer';
+import ImgToBase64 from 'react-native-image-base64';
+
 
 module.exports = class HomePage extends Component {
   static navigationOptions = {
@@ -190,20 +193,22 @@ module.exports = class HomePage extends Component {
 
   renderTTS = obj => { // Renderizar itens da barra TTs
     return (
-      <TouchableOpacity
-        onLongPress={item =>
-          Alert.alert('Apagar', 'Deseja apagar?', [
-            {text: 'Sim', onPress: () => this.deleteTTs(item)},
-            {text: 'Não'},
-          ])
-        }
-        delayLongPress={1500}>
-        <Image
-          style={styles.imagesTTS}
-          source={{uri: obj.item.uri}}
-        />
-        <Text style={styles.textItens}>{obj.item.name}</Text>
-      </TouchableOpacity>
+      <View style = {styles.imagesTTS}>
+        <TouchableOpacity
+          onLongPress={item =>
+            Alert.alert('Apagar', 'Deseja apagar?', [
+              {text: 'Sim', onPress: () => this.deleteTTs(item)},
+              {text: 'Não'},
+            ])
+          }
+          delayLongPress={1500}>
+          <Image
+            style={styles.imagesTTS}
+            source={{uri: obj.item.uri}}
+            />
+          <Text style={styles.textItens}>{obj.item.name}</Text>
+        </TouchableOpacity>
+      </View>
     );
   };
 
@@ -232,6 +237,8 @@ module.exports = class HomePage extends Component {
       title: 'Selecionar Imagem',
       takePhotoButtonTitle: 'Tirar uma foto',
       chooseFromLibraryButtonTitle: 'Escolher da galeria',
+      quality: 1,
+      noData: true,
       storageOptions: {
         skipBackup: true,
         path: 'images',
@@ -243,10 +250,15 @@ module.exports = class HomePage extends Component {
         if (response.error) {
           alert('ImagePicker Error: ', response.error);
         } else {
-          let source = { uri: 'data:image/jpeg;base64,' + response.data };
-          this.setState({
-            uri: source.uri,
-          });
+          if(response.path){
+            ImageResizer.createResizedImage(response.path, 800, 600, 'JPEG', 100)
+            .then(({uri}) => {
+                ImgToBase64.getBase64String(uri)
+                .then(base64String => {
+                  this.setState({uri: 'data:image/jpeg;base64,' + base64String})
+                }).catch(err => {alert(err)})
+            }).catch(err => alert(err))
+          }
         }
       });
       this.setState({select: false})
@@ -255,14 +267,19 @@ module.exports = class HomePage extends Component {
         if (response.error) {
           alert('ImagePicker Error: ', response.error);
         } else {
-          let source = { uri: 'data:image/jpeg;base64,' + response.data };
-          this.setState({
-            uri: source.uri,
-          });
+          if(response.path){
+            ImageResizer.createResizedImage(response.path, 800, 600, 'JPEG', 100)
+            .then(({uri}) => {
+              ImgToBase64.getBase64String(uri)
+              .then(base64String => {
+                this.setState({uri: 'data:image/jpeg;base64,' + base64String})
+
+              }).catch(err => alert(err))
+            }).catch(err => alert(err))
+          }
         }
       });
       this.setState({select: false})
-
     }
   };
 
@@ -337,6 +354,7 @@ module.exports = class HomePage extends Component {
       this.setState({name: ' '})
       this.setState({uri: ' '})
       this.loadRealm()
+      this.handleCancelModal()
       
   
     }catch (err){
@@ -353,7 +371,7 @@ module.exports = class HomePage extends Component {
         maxHeight: 500,
         maxWidth: 500,
         alignSelf: 'center',}}
-        onBackButtonPress = {() => this.setState({isVisible: false})}
+        onBackButtonPress = {() => this.handleCancelModal()}
         >
           
         <View style={styles.container}>
@@ -467,8 +485,8 @@ module.exports = class HomePage extends Component {
 
 const styles = StyleSheet.create({
   ViewItens: {
-    width: 170,
-    height: 170,
+    width: 200,
+    height: 200,
     backgroundColor: '#fff',
     margin: 25,
   },
@@ -481,7 +499,7 @@ const styles = StyleSheet.create({
   imagesTTS: {
     height: 110, 
     width: 110, 
-    margin: 2
+    margin: 4
   },
   iconsTTS: {
     width: 80, 
@@ -494,8 +512,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#b8daf5',
   },
   Images: {
-    height: 170,
-    width: 170,
+    height: 200,
+    width: 200,
   },
   TTs: {
     backgroundColor: '#fff',
