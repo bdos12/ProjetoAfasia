@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {
   SafeAreaView,
-  StyleSheet,
   Alert,
   BackHandler,
   TouchableOpacity,
@@ -11,14 +10,14 @@ import {
   TextInput,
   FlatList,
 } from 'react-native';
-import getRealm from '../../services/realm';
-import deleteItem from './deleteItem';
+import getRealm, { deleteItem, saveRealm }from '../../services/realm';
 import speak from '../../services/tts';
 import Modal from "react-native-modal";
 import ImagePicker from 'react-native-image-picker';
 import ImageResizer from 'react-native-image-resizer';
 import ImgToBase64 from 'react-native-image-base64';
-import RNImgToBase64 from 'react-native-image-base64';
+
+import styles from './styles'
 
 
 module.exports = class HomePage extends Component {
@@ -114,7 +113,6 @@ module.exports = class HomePage extends Component {
   };
 
   handleAddItem = () => {
-    // Navegação de telas entre addCategory e addImage
     this.setState({isVisible: true})
   };
 
@@ -222,7 +220,6 @@ module.exports = class HomePage extends Component {
       temp.pop();
     } else {
       temp.pop();
-      
     }
     this.setState({imagesTTS: temp});
   };
@@ -301,71 +298,21 @@ module.exports = class HomePage extends Component {
       idCategory: this.state.idCategory
     }
     if (this.state.isCategory){
-      this.saveRealm(item, 1)
-    }else {
-      this.saveRealm(item, 2)
-    }
-  }
-
-  async saveRealm(category, option){ //Salvar categoria/imagem no banco de dados
-    try{
-      let data = {}
-      if(option === 1){
-        const realm = await getRealm()
-        let categoryID = Math.floor(Math.random() * 1000);
-        const imagesID = Math.floor(Math.random() * 1000);
-
-        data = {
-          id: categoryID,
-          name: category.name,
-          uri: category.uri,
-          images: [
-            {
-              id: imagesID,
-              idCategory: categoryID,
-              name: category.name,
-              uri: category.uri,
-              isCategory: false
-            },
-          ],
-          isCategory: true,
-        }
-
-        realm.write(() => {
-          realm.create('Category', data)
-        });
-
-        Alert.alert('Sucesso','Categoria adicionada com sucesso')
-      }else {
-        const realm = await getRealm()
-        const id = this.state.positionCategory;
-        let idImage = Math.floor(Math.random() * 1000)
-
-        data = {
-            id: idImage,
-            name: category.name,
-            uri: category.uri,
-            idCategory: category.idCategory,
-            isCategory: false
-          }
-          realm.write(() => {
-            realm.objects('Category')[id - 1].images.push(data)
-          });
-          Alert.alert('Sucesso','Imagem adicionado com sucesso')
+      if(saveRealm(item, 1, this.state.positionCategory)){
+        this.setState({name: ''})
+        this.setState({uri: ''})
+        this.loadRealm()
+        this.handleCancelModal()
       }
-
-      
-      this.setState({name: ' '})
-      this.setState({uri: ' '})
-      this.loadRealm()
-      this.handleCancelModal()
-      
-  
-    }catch (err){
-      Alert.alert('Erro', 'É necessário adicionar uma imagem e um nome')
+    }else {
+      if(saveRealm(item, 2, this.state.positionCategory)){
+        this.setState({name: ''})
+        this.setState({uri: ''})
+        this.loadRealm()
+        this.handleCancelModal()
+      }
     }
   }
-
   
   render() { //Render princial
     return (
@@ -408,7 +355,7 @@ module.exports = class HomePage extends Component {
         : //Se o Select for falso
         <View style={styles.container}>
           <View style={styles.viewTitle}>
-                <Text style={styles.AddCatg}>Adicionar Categoria</Text>
+                <Text style={styles.AddCatg}>Adicionar</Text>
           </View>
           <View style={styles.viewMiddle}>
             <View style = {styles.viewMiddleItem}>
@@ -486,180 +433,3 @@ module.exports = class HomePage extends Component {
     );
   }
 };
-
-const styles = StyleSheet.create({
-  ViewItens: { //filtro de sobre a imagem
-    width: 200,
-    height: 200,
-    backgroundColor: '#fff',
-    margin: 25,
-  },
-  textItens : { //Estilização de texto
-    textAlign: 'center',
-    alignItems: 'center',
-    alignContent: 'center',
-    fontSize: 40,
-  },
-  imagesTTS: {// Conteiner das imagens colocadas na caixa de texto
-    height: 90, 
-    width: 110, 
-    margin: 8,
-    //backgroundColor: '#f5f',
-  },
-  iconsTTS: { //Conteiner dos icones de play e exclusão
-    margin: 2,
-    width: 130, 
-    height: 95,
-    marginTop: -1,
-    //backgroundColor: '#2ff',
-  },
-  item: { // Conteiner abaixo da caixa de texto
-    flex: 1,
-    flexDirection: 'row',
-    flexBasis: 0,
-    backgroundColor: '#b8daf5',
-  },
-  Images: {
-    height: 200,
-    width: 200,
-  },
-  TTs: { //conteiner atrás da caixa de texto
-    backgroundColor: '#fff',
-    width: '100%',
-    height: '30%',
-    flexDirection: 'row',
-    borderColor: '#5fa2d4',
-    borderWidth: 5,
-    overflow: 'visible',
-  },
-  TTsView: {//Conteiner de texto do lado direito
-    height: '100%',
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'flex-end',
-  },
-  container: { //Alerta de adicionar imagem  
-    height: 555,
-    width: 500,
-    backgroundColor: '#88C7F6',
-    borderColor: '#fff',
-    borderWidth: 6,
-     borderRadius: 3,
-  },
-  viewTitle: { //conteirner superior do alert de add imagem
-    height: '13%',
-    alignItems:'center',
-    justifyContent: 'center',
-    borderColor: '#5794C2',
-    borderWidth: 3,
-    borderRadius: 3,
-    backgroundColor: '#B8DAF5'
-     
-     /*#B8DAF5*/
-     /*#5794C2 */ 
-
-   
-  },
-  viewTitleText: { // Titulo do conteiner de add imagem
-    fontSize: 40,
-    marginTop: '10%', 
-    marginBottom: '10%'
-  },
-  viewMiddle: { //conteiner do meio do alert de add imagem
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '72%',
-    borderColor: '#5794C2',
-    borderWidth: 3,
-    borderRadius: 3,
-    backgroundColor: '#B8DAF5'
-  },
-  viewBottom: { //conteiner inferior do alert de add imagem
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center' ,
-    height: '15%',
-    borderColor: '#5794C2',
-    borderWidth: 3,
-    borderRadius: 3,
-    backgroundColor: '#B8DAF5'
-   
-  },
-  viewMiddleIcon:{ //conteiner dos icones do alert de add imagens
-    alignItems: 'center',
-    margin: '15%',
-
-    // backgroundColor: '#fa0'
-  },
-  middleIconText: {
-    fontSize: 30
-  },
- 
-  textadd:{// Texto conteiner inferior do alert de add imagem
-    fontSize: 40,
-  },
-  input: {///Contorno do conteiner de texto de add categoria
-    flex: 1,
-    borderBottomWidth: 2,
-    borderBottomColor:'#fff',
-    borderBottomWidth: 2,
-    // backgroundColor: '#aaa'
-  },
-  viewBottomIcon: {
-    alignContent: 'center',
-    alignItems: 'center',
-    margin: '2%',
-    width: '40%',
-    height: '40%',
-     //backgroundColor: '#a2fa'
-  },
-  iconImage: {//Conteiner por de tras dos icones de adicionar imagem
-    width: 200,
-    height: 200,
-    margin: -40,
-    marginBottom: 0,
-     backgroundColor:'#DCEDFA' 
-  },
-  image:{// Add imagem--> Conteiner por de tras da imagem adicionada
-    width: 200,
-    height: 200,
-    backgroundColor:'#fff' ,
-  },
-  viewImage: {// Add imagem--> Conteiner por de tras da imagem adicionada 
-    width: 200,
-    height: 200,
-    
-     //backgroundColor: '#5abc'
-  },
-  viewMiddleInput: { // conteiner do nome da imagem -> Add
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-    alignItems: 'baseline',
-    marginTop: 10,
-   // margin: 25,
-    fontSize:30,
-     //backgroundColor: '#22fdab'
-  },
-  viewMiddleItem: { //Add imagem - Conteiner ao redor da  imagem adicionada da galeria
-     //backgroundColor: '#fabd',
-    width: 250,
-    height: 250,
-  },
-  viewBottomItem: {//Cor do conteiner de cancelar de add imagem 
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#aaa',
-    height: '100%',
-    width: '40%',
-     //backgroundColor: '#fabc'
-  },
-  AddCatg:{ //Fontes de --> Adicionar Categoria/ Cancelar/ Adicionar Obs: Depois de selecionar a imagem
-    fontSize: 30,
-  },
-  AddNome:{
-    fontSize: 30,
-  }
-});
