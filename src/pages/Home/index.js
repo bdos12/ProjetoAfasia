@@ -18,12 +18,16 @@ import Modal from "react-native-modal";
 import ImagePicker from 'react-native-image-picker';
 import ImageResizer from 'react-native-image-resizer';
 import ImgToBase64 from 'react-native-image-base64';
+import RNImgToBase64 from 'react-native-image-base64';
 
 
 module.exports = class HomePage extends Component {
   static navigationOptions = {
     // Propriedades da navegação
-    title: 'Inicio',
+    title: 'INICIO',
+    titleStyle:{
+      fontSize: 40,
+    },
     headerStyle: {
       backgroundColor: '#b8daf5',
     },
@@ -87,7 +91,7 @@ module.exports = class HomePage extends Component {
     const data = [];
     const add = {
       id: Math.random() + 100,
-      name: 'Adicionar',
+      name: 'Adicionar ',
       uri: require('./icons/add-circle-512.png'),
       isAdd: true,
     };
@@ -397,14 +401,14 @@ module.exports = class HomePage extends Component {
           </View>
           <View style={styles.viewBottom}>
               <TouchableOpacity style = {styles.viewBottomItem} onPress = {() => this.handleCancelModal()}>
-                <Text>Cancelar</Text>
+                <Text style={styles.textadd}>Cancelar</Text>
               </TouchableOpacity>
           </View>
         </View> 
         : //Se o Select for falso
         <View style={styles.container}>
           <View style={styles.viewTitle}>
-                <Text>Adicionar Categoria</Text>
+                <Text style={styles.AddCatg}>Adicionar Categoria</Text>
           </View>
           <View style={styles.viewMiddle}>
             <View style = {styles.viewMiddleItem}>
@@ -414,7 +418,7 @@ module.exports = class HomePage extends Component {
                 </View>
               </View>
               <View style = {styles.viewMiddleInput}>
-                <Text>Nome: </Text>
+                <Text style={styles.AddNome}>Nome: </Text>
                 <TextInput 
                 style={styles.input}
                 value={this.state.name} 
@@ -425,10 +429,10 @@ module.exports = class HomePage extends Component {
           </View>
           <View style={styles.viewBottom}>
               <TouchableOpacity style = {styles.viewBottomItem} onPress = {() => this.handleCancelModal()}>
-                <Text>Cancelar</Text>
+                <Text style={styles.AddCatg}>Cancelar</Text>
               </TouchableOpacity>
             <TouchableOpacity style = {styles.viewBottomItem} onPress={() => this.handleSaveRealm()}>
-                <Text>Adicionar</Text>
+                <Text style={styles.AddCatg}>Adicionar</Text>
               </TouchableOpacity>
           </View>
         </View>
@@ -448,7 +452,7 @@ module.exports = class HomePage extends Component {
             <TouchableOpacity onPress={() => this.handleSpeak()}>
               <Image
                 style={styles.iconsTTS}
-                source={require('./icons/icon_speak.png')}
+                source={require('./icons/play.png')}
               />
             </TouchableOpacity>
 
@@ -463,7 +467,7 @@ module.exports = class HomePage extends Component {
               delayLongPress={1500}>
               <Image
                 style={styles.iconsTTS}
-                source={require('./icons/icon_delete.png')}
+                source={require('./icons/exclu.png')}
                 />
             </TouchableOpacity>
           </View>
@@ -484,29 +488,32 @@ module.exports = class HomePage extends Component {
 };
 
 const styles = StyleSheet.create({
-  ViewItens: {
+  ViewItens: { //filtro de sobre a imagem
     width: 200,
     height: 200,
     backgroundColor: '#fff',
     margin: 25,
   },
-  textItens : {
+  textItens : { //Estilização de texto
     textAlign: 'center',
     alignItems: 'center',
     alignContent: 'center',
-    fontSize: 18,
+    fontSize: 40,
   },
-  imagesTTS: {
-    height: 110, 
+  imagesTTS: {// Conteiner das imagens colocadas na caixa de texto
+    height: 90, 
     width: 110, 
-    margin: 4
+    margin: 8,
+    //backgroundColor: '#f5f',
   },
-  iconsTTS: {
+  iconsTTS: { //Conteiner dos icones de play e exclusão
     margin: 2,
-    width: 80, 
-    height: 90
+    width: 130, 
+    height: 95,
+    marginTop: -1,
+    //backgroundColor: '#2ff',
   },
-  item: {
+  item: { // Conteiner abaixo da caixa de texto
     flex: 1,
     flexDirection: 'row',
     flexBasis: 0,
@@ -516,7 +523,7 @@ const styles = StyleSheet.create({
     height: 200,
     width: 200,
   },
-  TTs: {
+  TTs: { //conteiner atrás da caixa de texto
     backgroundColor: '#fff',
     width: '100%',
     height: '30%',
@@ -525,90 +532,121 @@ const styles = StyleSheet.create({
     borderWidth: 5,
     overflow: 'visible',
   },
-  TTsView: {
+  TTsView: {//Conteiner de texto do lado direito
     height: '100%',
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'flex-end',
   },
-  container: {
-    height: 500,
+  container: { //Alerta de adicionar imagem  
+    height: 555,
     width: 500,
-    backgroundColor: '#eee',
+    backgroundColor: '#88C7F6',
+    borderColor: '#fff',
+    borderWidth: 6,
+     borderRadius: 3,
   },
-  viewTitle: {
-    height: '10%',
+  viewTitle: { //conteirner superior do alert de add imagem
+    height: '13%',
     alignItems:'center',
     justifyContent: 'center',
-    // backgroundColor: '#f00'
+    borderColor: '#5794C2',
+    borderWidth: 3,
+    borderRadius: 3,
+    backgroundColor: '#B8DAF5'
+     
+     /*#B8DAF5*/
+     /*#5794C2 */ 
+
+   
   },
-  viewTitleText: {
-    fontSize: 30,
-    marginTop: '20%'
+  viewTitleText: { // Titulo do conteiner de add imagem
+    fontSize: 40,
+    marginTop: '10%', 
+    marginBottom: '10%'
   },
-  viewMiddle: {
+  viewMiddle: { //conteiner do meio do alert de add imagem
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    height: '75%',
-    // backgroundColor: '#0a0'
+    height: '72%',
+    borderColor: '#5794C2',
+    borderWidth: 3,
+    borderRadius: 3,
+    backgroundColor: '#B8DAF5'
   },
-  viewMiddleIcon:{
-    alignItems: 'center',
-    margin: '10%',
-    // backgroundColor: '#fa0'
-  },
-  middleIconText: {
-    fontSize: 20
-  },
-  viewBottom: {
+  viewBottom: { //conteiner inferior do alert de add imagem
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center' ,
     height: '15%',
-    // backgroundColor: '#00f'
+    borderColor: '#5794C2',
+    borderWidth: 3,
+    borderRadius: 3,
+    backgroundColor: '#B8DAF5'
+   
   },
-  input: {
+  viewMiddleIcon:{ //conteiner dos icones do alert de add imagens
+    alignItems: 'center',
+    margin: '15%',
+
+    // backgroundColor: '#fa0'
+  },
+  middleIconText: {
+    fontSize: 30
+  },
+ 
+  textadd:{// Texto conteiner inferior do alert de add imagem
+    fontSize: 40,
+  },
+  input: {///Contorno do conteiner de texto de add categoria
     flex: 1,
-    borderWidth: 2,
-    borderColor: '#fff',
-    borderRadius: 2,
+    borderBottomWidth: 2,
+    borderBottomColor:'#fff',
+    borderBottomWidth: 2,
     // backgroundColor: '#aaa'
   },
   viewBottomIcon: {
     alignContent: 'center',
     alignItems: 'center',
-    margin: '3%',
-    width: '50%',
-    height: '50%',
-    // backgroundColor: '#aaa'
+    margin: '2%',
+    width: '40%',
+    height: '40%',
+     //backgroundColor: '#a2fa'
   },
-  iconImage: {
-    width: 150,
-    height: 150,
-  },
-  image:{
-    width: 200,
-    height: 200
-  },
-  viewImage: {
+  iconImage: {//Conteiner por de tras dos icones de adicionar imagem
     width: 200,
     height: 200,
-    // backgroundColor: '#5abc'
+    margin: -40,
+    marginBottom: 0,
+     backgroundColor:'#DCEDFA' 
   },
-  viewMiddleInput: {
+  image:{// Add imagem--> Conteiner por de tras da imagem adicionada
+    width: 200,
+    height: 200,
+    backgroundColor:'#fff' ,
+  },
+  viewImage: {// Add imagem--> Conteiner por de tras da imagem adicionada 
+    width: 200,
+    height: 200,
+    
+     //backgroundColor: '#5abc'
+  },
+  viewMiddleInput: { // conteiner do nome da imagem -> Add
     flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: 'flex-start',
+    alignItems: 'baseline',
     marginTop: 10,
-    // backgroundColor: '#22fdab'
+   // margin: 25,
+    fontSize:30,
+     //backgroundColor: '#22fdab'
   },
-  viewMiddleItem: {
-    // backgroundColor: '#fabd',
+  viewMiddleItem: { //Add imagem - Conteiner ao redor da  imagem adicionada da galeria
+     //backgroundColor: '#fabd',
     width: 250,
     height: 250,
   },
-  viewBottomItem: {
+  viewBottomItem: {//Cor do conteiner de cancelar de add imagem 
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
@@ -616,6 +654,12 @@ const styles = StyleSheet.create({
     borderColor: '#aaa',
     height: '100%',
     width: '40%',
-    // backgroundColor: '#fabc'
+     //backgroundColor: '#fabc'
+  },
+  AddCatg:{ //Fontes de --> Adicionar Categoria/ Cancelar/ Adicionar Obs: Depois de selecionar a imagem
+    fontSize: 30,
+  },
+  AddNome:{
+    fontSize: 30,
   }
 });
