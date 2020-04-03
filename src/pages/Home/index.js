@@ -19,7 +19,6 @@ import ImgToBase64 from 'react-native-image-base64';
 
 import styles from './styles'
 
-
 module.exports = class HomePage extends Component {
   static navigationOptions = {
     // Propriedades da navegação
@@ -141,7 +140,7 @@ module.exports = class HomePage extends Component {
               this.setDate(item);
             }}
             onLongPress={() =>
-              Alert.alert('Teste ', `Apagar categoria ${item.name}?`, [
+              Alert.alert('Apagar ', `Apagar categoria ${item.name}?`, [
                 {text: 'Sim', onPress: () => this.handleDeleteItem(item)},
                 {text: 'Não'},
               ])
@@ -159,7 +158,7 @@ module.exports = class HomePage extends Component {
       <View style={styles.ViewItens}>
         <TouchableOpacity
           onLongPress={() =>
-            Alert.alert('Teste ', `Apagar o item ${item.name}?`, [
+            Alert.alert('Apagar ', `Apagar o item ${item.name}?`, [
               {text: 'Sim', onPress: () => this.handleDeleteItem(item)},
               {text: 'Não'},
             ])
