@@ -3,8 +3,8 @@ import { StyleSheet } from 'react-native'
 const styles = StyleSheet.create({
     ViewItens: { //filtro de sobre a imagem
       width: 200,
-      height: 200,
-      backgroundColor: '#fff',
+      height: 330,
+      //backgroundColor: '#fff',
       margin: 25,
     },
     textItens : { //Estilização de texto
@@ -14,17 +14,17 @@ const styles = StyleSheet.create({
       fontSize: 40,
     },
     imagesTTS: {// Conteiner das imagens colocadas na caixa de texto
-      height: 90, 
-      width: 110, 
+      height: 100, 
+      width: 150, 
       margin: 8,
       //backgroundColor: '#f5f',
     },
     iconsTTS: { //Conteiner dos icones de play e exclusão
-      margin: 2,
-      width: 130, 
-      height: 95,
-      marginTop: -1,
-      //backgroundColor: '#2ff',
+     margin: 2,
+     width: 130, 
+     height: 95,
+     marginTop: -1,
+     //backgroundColor: '#2ff',
     },
     item: { // Conteiner abaixo da caixa de texto
       flex: 1,
@@ -36,10 +36,10 @@ const styles = StyleSheet.create({
       height: 200,
       width: 200,
     },
-    TTs: { //conteiner atrás da caixa de texto
+    TTs: { //conteiner  da caixa de texto
       backgroundColor: '#fff',
       width: '100%',
-      height: '30%',
+      height: '33%',
       flexDirection: 'row',
       borderColor: '#5fa2d4',
       borderWidth: 5,
