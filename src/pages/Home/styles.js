@@ -1,30 +1,35 @@
-import { StyleSheet } from 'react-native'
+import { StyleSheet, Dimensions } from 'react-native'
+
+let deviceWidth = Dimensions.get('window').width
+let deviceHeight = Dimensions.get('window').height
+
 
 const styles = StyleSheet.create({
     ViewItens: { //filtro de sobre a imagem
       width: 200,
       height: 330,
-      //backgroundColor: '#fff',
+      // backgroundColor: '#fff',
       margin: 25,
     },
     textItens : { //Estilização de texto
       textAlign: 'center',
       alignItems: 'center',
       alignContent: 'center',
-      fontSize: 40,
+      fontSize: deviceWidth * 0.02,
     },
     imagesTTS: {// Conteiner das imagens colocadas na caixa de texto
       height: 100, 
       width: 150, 
       margin: 8,
-      //backgroundColor: '#f5f',
+      // backgroundColor: '#f5f',
     },
     iconsTTS: { //Conteiner dos icones de play e exclusão
      margin: 2,
-     width: 130, 
-     height: 95,
+     width: deviceWidth * 0.1, 
+     height: deviceHeight * 0.14,
      marginTop: -1,
-     //backgroundColor: '#2ff',
+     resizeMode:'contain'
+    //  backgroundColor: '#2ff',
     },
     item: { // Conteiner abaixo da caixa de texto
       flex: 1,
@@ -35,11 +40,12 @@ const styles = StyleSheet.create({
     Images: {
       height: 200,
       width: 200,
+      
     },
     TTs: { //conteiner  da caixa de texto
       backgroundColor: '#fff',
-      width: '100%',
-      height: '33%',
+      width: deviceWidth,
+      height: deviceHeight * 0.30,
       flexDirection: 'row',
       borderColor: '#5fa2d4',
       borderWidth: 5,
@@ -52,15 +58,15 @@ const styles = StyleSheet.create({
       alignItems: 'flex-end',
     },
     container: { //Alerta de adicionar imagem  
-      height: 555,
-      width: 500,
+      height: deviceHeight * 0.7,
+      width: deviceWidth * 0.4,
       backgroundColor: '#88C7F6',
       borderColor: '#fff',
       borderWidth: 6,
-       borderRadius: 3,
+      borderRadius: 3,
     },
     viewTitle: { //conteirner superior do alert de add imagem
-      height: '13%',
+      height: deviceHeight * 0.1,
       alignItems:'center',
       justifyContent: 'center',
       borderColor: '#5794C2',
@@ -74,7 +80,7 @@ const styles = StyleSheet.create({
      
     },
     viewTitleText: { // Titulo do conteiner de add imagem
-      fontSize: 40,
+      fontSize: deviceWidth * 0.02,
       marginTop: '10%', 
       marginBottom: '10%'
     },
@@ -82,7 +88,7 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      height: '72%',
+      height: deviceHeight * 0.47,
       borderColor: '#5794C2',
       borderWidth: 3,
       borderRadius: 3,
@@ -92,7 +98,7 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center' ,
-      height: '15%',
+      height: deviceHeight * 0.1,
       borderColor: '#5794C2',
       borderWidth: 3,
       borderRadius: 3,
@@ -101,79 +107,90 @@ const styles = StyleSheet.create({
     },
     viewMiddleIcon:{ //conteiner dos icones do alert de add imagens
       alignItems: 'center',
-      margin: '15%',
-  
+      margin: '2%',
       // backgroundColor: '#fa0'
     },
     middleIconText: {
-      fontSize: 30
+      fontSize: deviceWidth * 0.03,
     },
    
-    textadd:{// Texto conteiner inferior do alert de add imagem
-      fontSize: 40,
+    textadd:{// Texto conteiner inferior do alert de add imagem - interno
+      fontSize: deviceWidth * 0.02,
+      
     },
     input: {///Contorno do conteiner de texto de add categoria
-      flex: 1,
-      borderBottomWidth: 2,
-      borderBottomColor:'#fff',
-      borderBottomWidth: 2,
-      // backgroundColor: '#aaa'
+      width: deviceWidth * 0.15,
+      height: deviceHeight * 0.07,
+      fontSize: deviceWidth * 0.02,
+      marginBottom: -3,
+      backgroundColor: '#fff'
     },
     viewBottomIcon: {
       alignContent: 'center',
       alignItems: 'center',
       margin: '2%',
-      width: '40%',
-      height: '40%',
+      width: 300,
+      height: 300,
        //backgroundColor: '#a2fa'
     },
     iconImage: {//Conteiner por de tras dos icones de adicionar imagem
-      width: 200,
-      height: 200,
-      margin: -40,
-      marginBottom: 0,
-       backgroundColor:'#DCEDFA' 
+      height: deviceHeight * 0.25,
+      width: deviceWidth * 0.15,
+      backgroundColor:'#DCEDFA',
+      resizeMode:"contain",
+
+
     },
     image:{// Add imagem--> Conteiner por de tras da imagem adicionada
-      width: 200,
-      height: 200,
+      marginTop: '10%',
+      height: deviceHeight * 0.25,
+      width: deviceWidth * 0.15,
       backgroundColor:'#fff' ,
+      resizeMode:"contain",
     },
     viewImage: {// Add imagem--> Conteiner por de tras da imagem adicionada 
-      width: 200,
-      height: 200,
-      
+      height: deviceHeight * 0.25,
+      width: deviceWidth * 0.15,
        //backgroundColor: '#5abc'
     },
     viewMiddleInput: { // conteiner do nome da imagem -> Add
       flexDirection: 'row',
       justifyContent: 'flex-start',
-      alignItems: 'baseline',
-      marginTop: 10,
-     // margin: 25,
-      fontSize:30,
-       //backgroundColor: '#22fdab'
+      alignItems: 'center',
+      height: deviceHeight,
+      width: deviceWidth * 0.295,
+      flex: 1,
+      marginTop: '5%',
+      //  backgroundColor: '#22fdab'
     },
     viewMiddleItem: { //Add imagem - Conteiner ao redor da  imagem adicionada da galeria
        //backgroundColor: '#fabd',
-      width: 250,
-      height: 250,
+      alignItems: 'center',
+      height: deviceHeight * 0.40,
+      width: deviceWidth * 0.35,
+      resizeMode:"contain",
     },
     viewBottomItem: {//Cor do conteiner de cancelar de add imagem 
       flex: 1,
       alignItems: 'center',
       justifyContent: 'center',
-      borderWidth: 1,
-      borderColor: '#aaa',
-      height: '100%',
-      width: '40%',
+      height: deviceWidth * 0.40,
+      width: deviceWidth * 0.3,
        //backgroundColor: '#fabc'
     },
     AddCatg:{ //Fontes de --> Adicionar Categoria/ Cancelar/ Adicionar Obs: Depois de selecionar a imagem
-      fontSize: 30,
+      fontSize: deviceWidth * 0.02,
     },
     AddNome:{
-      fontSize: 30,
+      fontSize: deviceWidth * 0.02,
+    },
+    flatListTTS:{
+      width: deviceWidth - 300
+    },
+    modalAdd: {
+      maxHeight: deviceHeight * 0.2,
+      maxWidth: deviceWidth * 0.2,
+      alignSelf: 'center',
     }
   });
   

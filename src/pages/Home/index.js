@@ -8,7 +8,7 @@ import {
   Text,
   View,
   TextInput,
-  FlatList,
+  FlatList, 
 } from 'react-native';
 import getRealm, { deleteItem, saveRealm }from '../../services/realm';
 import speak from '../../services/tts';
@@ -118,18 +118,17 @@ module.exports = class HomePage extends Component {
   renderItem = ({item}) => { // Rendeizar os itens da FlatList
     if (item.isAdd) {
       return (
-        <>
+        <View style={styles.ViewItens, {margin: 25, alignItems: 'center'}}>
           <TouchableOpacity
-            style={{margin: 25, alignItems: 'center'}}
             onPress={() => this.handleAddItem()}>
             <Image
               style={styles.Images}
               source={require('./icons/icon_add.png')}
-            />
-            <Text style = {styles.textItens}>{item.name}</Text>
+              />
+            <Text style={styles.textItens}>{item.name}</Text>
 
           </TouchableOpacity>
-        </>
+        </View>
       );
     }
     if (item.isCategory) {
@@ -145,8 +144,7 @@ module.exports = class HomePage extends Component {
                 {text: 'Não'},
               ])
             }
-            delayLongPress={300}
-            style={styles.Images}>
+            delayLongPress={300}>
             <Image style={styles.Images} source={{uri: item.uri}} />
             <Text style={styles.textItens}>{item.name}</Text>
 
@@ -164,8 +162,7 @@ module.exports = class HomePage extends Component {
             ])
           }
           delayLongPress={300}
-          onPress={() => this.addTTS(item)}
-          style={styles.Images}>
+          onPress={() => this.addTTS(item)}>
           <Image style={styles.Images} source={{uri: item.uri}} />
           <Text style={styles.textItens}>{item.name}</Text>
 
@@ -290,21 +287,21 @@ module.exports = class HomePage extends Component {
     this.setState({name: ''})
   }
 
-  handleSaveRealm = () => { //Salvar no banco de dados
+  async handleSaveRealm() { //Salvar no banco de dados
     let item = {
       name: this.state.name,
       uri: this.state.uri,
       idCategory: this.state.idCategory
     }
     if (this.state.isCategory){
-      if(saveRealm(item, 1, this.state.positionCategory)){
+      if(await saveRealm(item, 1, this.state.positionCategory)){
         this.setState({name: ''})
         this.setState({uri: ''})
         this.loadRealm()
         this.handleCancelModal()
       }
     }else {
-      if(saveRealm(item, 2, this.state.positionCategory)){
+      if(await saveRealm(item, 2, this.state.positionCategory)){
         this.setState({name: ''})
         this.setState({uri: ''})
         this.loadRealm()
@@ -388,6 +385,7 @@ module.exports = class HomePage extends Component {
       <>
         <View style={styles.TTs}>
           <FlatList
+            style={styles.flatListTTS}
             data={this.state.imagesTTS}
             extraData={this.state}
             horizontal
