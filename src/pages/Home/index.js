@@ -8,6 +8,7 @@ import {
   Text,
   View,
   TextInput,
+  Dimensions,
   FlatList, 
 } from 'react-native';
 import getRealm, { deleteItem, saveRealm }from '../../services/realm';
@@ -18,6 +19,9 @@ import ImageResizer from 'react-native-image-resizer';
 import ImgToBase64 from 'react-native-image-base64';
 
 import styles from './styles'
+
+let deviceWidth = Dimensions.get('window').width
+
 
 module.exports = class HomePage extends Component {
   static navigationOptions = {
@@ -116,9 +120,10 @@ module.exports = class HomePage extends Component {
   };
 
   renderItem = ({item}) => { // Rendeizar os itens da FlatList
+    
     if (item.isAdd) {
       return (
-        <View style={styles.ViewItens, {margin: 25, alignItems: 'center'}}>
+        <View style={styles.ViewItens}>
           <TouchableOpacity
             onPress={() => this.handleAddItem()}>
             <Image
@@ -293,24 +298,31 @@ module.exports = class HomePage extends Component {
       uri: this.state.uri,
       idCategory: this.state.idCategory
     }
+    if (item.name === ' ' || item.uri === ' '){
+      return Alert.alert("Erro ao adicionar!", "Precisa adicionar uma imagem e um nome.")
+    }
     if (this.state.isCategory){
       if(await saveRealm(item, 1, this.state.positionCategory)){
-        this.setState({name: ''})
-        this.setState({uri: ''})
+        this.setState({name: ' '})
+        this.setState({uri: ' '})
         this.loadRealm()
         this.handleCancelModal()
       }
     }else {
       if(await saveRealm(item, 2, this.state.positionCategory)){
-        this.setState({name: ''})
-        this.setState({uri: ''})
+        this.setState({name: ' '})
+        this.setState({uri: ' '})
         this.loadRealm()
         this.handleCancelModal()
       }
     }
   }
+
+
+
   
   render() { //Render princial
+    const columns = 4;
     return (
       <>
       <Modal isVisible = {this.state.isVisible}
@@ -418,11 +430,13 @@ module.exports = class HomePage extends Component {
         </View>
         <SafeAreaView style={styles.item}>
           <FlatList
+          // createRows(this.state.data, columns)
+            // data = {this.createRows(this.state.data, columns)}
             data={this.state.data}
             keyExtractor={item => String(item.id)}
             renderItem={this.renderItem}
             extraData={this.state}
-            numColumns={5}
+            numColumns={columns}
             />
         </SafeAreaView>
       </>

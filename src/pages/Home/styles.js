@@ -8,8 +8,9 @@ const styles = StyleSheet.create({
     ViewItens: { //filtro de sobre a imagem
       width: 200,
       height: 330,
+      flex: 1/4,
+      margin: '2%',
       // backgroundColor: '#fff',
-      margin: 25,
     },
     textItens : { //Estilização de texto
       textAlign: 'center',
@@ -36,10 +37,13 @@ const styles = StyleSheet.create({
       flexDirection: 'row',
       flexBasis: 0,
       backgroundColor: '#b8daf5',
+      width: deviceWidth,
     },
     Images: {
-      height: 200,
-      width: 200,
+      // width: 200,
+      width: '100%',
+      height: '70%',
+      resizeMode:'contain',
       
     },
     TTs: { //conteiner  da caixa de texto
@@ -191,6 +195,9 @@ const styles = StyleSheet.create({
       maxHeight: deviceHeight * 0.2,
       maxWidth: deviceWidth * 0.2,
       alignSelf: 'center',
+    },
+    itemEmpty: {
+      backgroundColor: "transparent"
     }
   });
   
