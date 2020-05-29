@@ -20,7 +20,7 @@ import ImgToBase64 from 'react-native-image-base64';
 
 import styles from './styles'
 
-let deviceWidth = Dimensions.get('window').width
+// let deviceWidth = Dimensions.get('window').width
 
 
 module.exports = class HomePage extends Component {
@@ -120,7 +120,6 @@ module.exports = class HomePage extends Component {
   };
 
   renderItem = ({item}) => { // Rendeizar os itens da FlatList
-    
     if (item.isAdd) {
       return (
         <View style={styles.ViewItens}>
@@ -154,25 +153,26 @@ module.exports = class HomePage extends Component {
             <Text style={styles.textItens}>{item.name}</Text>
 
           </TouchableOpacity>
+
         </View>
       );
     }
     return (
-      <View style={styles.ViewItens}>
-        <TouchableOpacity
-          onLongPress={() =>
-            Alert.alert('Apagar ', `Apagar o item ${item.name}?`, [
-              {text: 'Sim', onPress: () => this.handleDeleteItem(item)},
-              {text: 'Não'},
-            ])
-          }
-          delayLongPress={300}
-          onPress={() => this.addTTS(item)}>
-          <Image style={styles.Images} source={{uri: item.uri}} />
-          <Text style={styles.textItens}>{item.name}</Text>
+        <View style={styles.ViewItens}>
+          <TouchableOpacity
+            onLongPress={() =>
+              Alert.alert('Apagar ', `Apagar o item ${item.name}?`, [
+                {text: 'Sim', onPress: () => this.handleDeleteItem(item)},
+                {text: 'Não'},
+              ])
+            }
+            delayLongPress={300}
+            onPress={() => this.addTTS(item)}>
+            <Image style={styles.Images} source={{uri: item.uri}} />
+            <Text style={styles.textItens}>{item.name}</Text>
 
-        </TouchableOpacity>
-      </View>
+          </TouchableOpacity>
+        </View>
     );
   };
 
@@ -196,7 +196,7 @@ module.exports = class HomePage extends Component {
 
   renderTTS = obj => { // Renderizar itens da barra TTs
     return (
-      <View style = {styles.imagesTTS}>
+      <View style={styles.viewTTs}>
         <TouchableOpacity
           onLongPress={item =>
             Alert.alert('Apagar', 'Deseja apagar?', [
@@ -317,9 +317,6 @@ module.exports = class HomePage extends Component {
       }
     }
   }
-
-
-
   
   render() { //Render princial
     const columns = 4;
@@ -430,6 +427,7 @@ module.exports = class HomePage extends Component {
         </View>
         <SafeAreaView style={styles.item}>
           <FlatList
+            style={styles.flatlistItem}
           // createRows(this.state.data, columns)
             // data = {this.createRows(this.state.data, columns)}
             data={this.state.data}

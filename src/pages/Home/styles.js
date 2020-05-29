@@ -6,21 +6,37 @@ let deviceHeight = Dimensions.get('window').height
 
 const styles = StyleSheet.create({
     ViewItens: { //filtro de sobre a imagem
-      width: 200,
-      height: 330,
+      width: deviceWidth * 0.15,
+      height: deviceHeight * 0.4,
       flex: 1/4,
       margin: '2%',
-      // backgroundColor: '#fff',
+      borderRadius: 10,
+      // alignItems: 'center',
+      //borderWidth: 10,
+      borderColor: '#fff',
+      //backgroundColor: '#DCEDFA',
     },
     textItens : { //Estilização de texto
       textAlign: 'center',
       alignItems: 'center',
       alignContent: 'center',
-      fontSize: deviceWidth * 0.02,
+      fontSize: deviceWidth * 0.015,
+      margin: '5%'
+      // resizeMode:'contain',
+      // tex
+      // fontSize: deviceWidth * 0.02,
+
+    },
+    viewTTs:{
+      height: deviceHeight * 0.30,
+      width: deviceWidth * 0.13,
+
     },
     imagesTTS: {// Conteiner das imagens colocadas na caixa de texto
-      height: 100, 
-      width: 150, 
+      // width: 150,
+      width: deviceWidth * 0.12,
+      height: deviceHeight * 0.15,
+      resizeMode:'contain',
       margin: 8,
       // backgroundColor: '#f5f',
     },
@@ -34,17 +50,21 @@ const styles = StyleSheet.create({
     },
     item: { // Conteiner abaixo da caixa de texto
       flex: 1,
-      flexDirection: 'row',
+      flexDirection: 'column',
       flexBasis: 0,
       backgroundColor: '#b8daf5',
       width: deviceWidth,
     },
     Images: {
       // width: 200,
+      top: 10,
       width: '100%',
       height: '70%',
       resizeMode:'contain',
-      
+     borderRadius: 10,
+     shadowRadius: 20,
+    
+    borderColor:'#DCEDFA',
     },
     TTs: { //conteiner  da caixa de texto
       backgroundColor: '#fff',
@@ -189,7 +209,8 @@ const styles = StyleSheet.create({
       fontSize: deviceWidth * 0.02,
     },
     flatListTTS:{
-      width: deviceWidth - 300
+      width: deviceWidth - 300,
+      height: deviceHeight * 0.30,
     },
     modalAdd: {
       maxHeight: deviceHeight * 0.2,
@@ -198,6 +219,10 @@ const styles = StyleSheet.create({
     },
     itemEmpty: {
       backgroundColor: "transparent"
+    },
+    flatlistItem:{
+      // height:deviceHeight + 500,
+      // width: deviceWidth
     }
   });
   
