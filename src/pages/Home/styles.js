@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
     },
     input: {///Contorno do conteiner de texto de add categoria
       width: deviceWidth * 0.15,
-      height: deviceHeight * 0.07,
+      height: deviceHeight * 0.1,
       fontSize: deviceWidth * 0.02,
       marginBottom: -3,
       backgroundColor: '#fff'
