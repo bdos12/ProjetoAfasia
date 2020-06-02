@@ -7,7 +7,16 @@ import HomePage from './pages/Home/index'
 const AppNavigator = createStackNavigator(
   {
     Home: {
-      screen: HomePage
+      screen: HomePage,
+      navigationOptions: {
+        title: "Inicio"
+      },
+      titleStyle:{
+        fontSize: 40,
+      },
+      headerStyle: {
+        backgroundColor: '#b8daf5',
+      },
     },
   },
   {
