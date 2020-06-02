@@ -77,3 +77,16 @@ export async function saveRealm(category, option, positionCategory){ //Salvar ca
     Alert.alert('Erro', 'É necessário adicionar uma imagem e um nome')
   }
 }
+
+export async function loadRealm(data){
+  console.log("[Iniciando] - loadRealm")
+  
+  const realm = await getRealm();
+  let item = []
+
+  item.push(data)
+  item.push(... realm.objects('Category'))
+  console.log("[Finalizado] - loadRealm")
+  return item
+
+}
