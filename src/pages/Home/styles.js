@@ -5,23 +5,18 @@ let deviceHeight = Dimensions.get('window').height
 
 const styles = StyleSheet.create({
   container:{ //Container principal
-    // alignItems: 'center'
     height: deviceHeight,
     width: deviceWidth,
     backgroundColor: "#e1e1e1",
     flexDirection: 'column'
   },
   viewTTS: { //Container do TTS
-    height: deviceHeight * 0.3,
+    height: deviceHeight * 0.2,
     backgroundColor: "#c1c1c1",
-    // borderColor: '#000',
   },
   viewItens:{ //Container dos itens
     width: '100%',
-    // height: '100%',
-    // backgroundColor: "#0f0",
     flex: 1,
-    // alignItems: 'baseline'
   },
   item: { //Item flatList > viewItens
     width: deviceWidth * 0.15,
@@ -29,8 +24,8 @@ const styles = StyleSheet.create({
     flex: 1/4,
     borderRadius: 10,
     borderColor: '#fff',
-  },
-  images: { // Imagens > RenderItem > flatList > viewItens
+},
+images: { // Imagens > RenderItem > flatList > viewItens
     top: '10%',
     width: '100%',
     height: '70%',
@@ -38,21 +33,17 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     shadowRadius: 20,
     borderColor:'#DCEDFA',
-  },
-  textItem: { //Text Itens > RenderItem > flatList > viewItens
+},
+textItem: { //Text Itens > RenderItem > flatList > viewItens
     textAlign: 'center',
     alignItems: 'center',
     alignContent: 'center',
     fontSize: deviceWidth * 0.015,
     top: '10%'
-  },
-
-
-
-
-  teste:{
-    height: deviceHeight,
-    width: deviceWidth
+},
+  flatlistItem:{ //Styles flatlist > viewItens
+    width: deviceWidth,
+    paddingBottom: 60,
   }
 })  
   

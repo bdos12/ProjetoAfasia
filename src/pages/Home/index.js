@@ -2,80 +2,136 @@ import React, {useState, useEffect} from 'react';
 import { 
   View, 
   FlatList, 
-  Text, 
-  TouchableOpacity, 
   Alert, 
-  Image, 
-  Button
+  BackHandler,
+  TouchableOpacity,
+  Text, 
+  Image,
+  DrawerLayoutAndroidComponent, 
 } from 'react-native';
 
-import getRealm, { deleteItem, saveRealm, loadRealm } from '../../services/realm'
+import { deleteItem, saveRealm, loadRealm } from '../../services/realm'
 
 import styles from './styles'
 
 const HomePage = () => {
-  const [data, setData] = useState([])
+  const columns = 4
+  const [data, setData] = useState([{}])
+  const [isCategory, setIsCategory] = useState(true)
+  const [idCategory, setIdCategory] = useState(0)
 
   useEffect(() => {
-    loadRealm(data)
-    .then(item => setData(item))
-    .catch(err => alert(err))
+    console.log("[useEffect] - call function loadItemBD")
+    loadItemBD()
   }, [])
+  
+  async function loadItemBD(){ // Carregar itens do banco de dados
+    console.log("[loadItemBD] - Init")
+    console.log("[loadItemBD] - call function loadRealm")
 
-  function renderItem({item}){ //Falta o add Item
-    if(item.isCategory){
-      return(
+    await loadRealm()
+    .then(item => {
+      setData(item)
+      setIsCategory(true)
+      console.log("[loadItemBD] - Loading items Done")
+    })
+    .catch(err => {
+      console.log("[Error loadItemBD] - " + err)
+      alert(err)
+    })
+  }
+
+  BackHandler.addEventListener( //Quando o botão de voltar do celular é pressionado
+    'hardwareBackPress', () => {
+      console.log("[hardwareBackPress] - Pressed")
+      if(isCategory){ //Se estiver nas categorias perguntar se o usuário quer fechar o aplicativo
+        Alert.alert("Sair", "Deseja sair do aplicativo?", [
+          {text: "Sim", onPress:() => {
+            console.log("[hardwareBackPress] - Exiting app...")
+            BackHandler.exitApp()
+          }},
+          {text: "Não", onPress: () => {
+            console.log("[hardwareBackPress] - Exit Cancel")
+          }}
+        ])
+      }else{ //Se não apenas recarrega o banco de dados
+        console.log("[hardwareBackPress] - Loading itens")
+        loadItemBD()
+      }
+      return true
+    }
+  )
+
+  function setItem(item){ //Abrir as imagens da categoria
+    setData(data[data.findIndex(obj => obj.id === item.id)].images)
+    setIsCategory(false)
+  }
+
+  async function handlerDeleteItem(item){
+    await deleteItem(item)
+    .then(() => loadItemBD())
+    .catch(err => console.log(err))
+  }
+
+  function renderItem({item}){ //Render > 
+    if(item.isAdd){
+    return(
         <View style={styles.item}>
           <TouchableOpacity
-            onPress={() => setItem(item)}
-            onLongPress={() => 
+              onPress={() => console.log("[Implementar] - Adicionar item/categoria")}
+          >
+              <Image style={styles.images} source={require('./icons/icon_add.png')}/>
+              <Text style={styles.textItem}>{item.name}</Text>
+          </TouchableOpacity>
+        </View>
+    );
+    }
+    if(item.isCategory){
+    return(
+        <View style={styles.item}>
+          <TouchableOpacity
+              onPress={() => setItem(item)}
+              onLongPress={() => 
               Alert.alert('Apagar', `Apagar categoria ${item.name}?`,[
-                {text: 'Sim', onPress: () => {}/* Deletar item*/},
-                {text: 'Não'},
+                  {text: 'Sim', onPress: () => handlerDeleteItem(item)},
+                  {text: 'Não'},
               ])  
-            }
-            delayLongPress={300}>
+              }
+              delayLongPress={300}>
               <Image style={styles.images} source={{uri: item.uri}}/>
               <Text style={styles.textItem}>{item.name}</Text>
           </TouchableOpacity>
         </View>
-      );
+    );
     }
     return(
-      <View style={styles.item}>
+    <View style={styles.item}>
         <TouchableOpacity
-        onLongPress={() => 
+          onLongPress={() => 
           Alert.alert('Apagar', `Apagar imagem ${item.name}?`,[
-            {text: 'Sim', onPress: () => {}/* Deletar item*/},
-            {text: 'Não'},
+              {text: 'Sim', onPress: () => handlerDeleteItem(item)},
+              {text: 'Não'},
           ])  
-        }
-        delayLongPress={300}>
+          }
+          delayLongPress={300}>
           <Image style={styles.images} source={{uri: item.uri}}/>
           <Text style={styles.textItem}>{item.name}</Text>
 
         </TouchableOpacity>
-      </View>
+    </View>
     );
-  }
+}
 
-  function setItem(item){
-
-    setData(data[data.findIndex(obj => obj.id === item.id)].images)
-  }
-
-  const columns = 4
   return (
     <View style={styles.container}> 
       {/* View Principal */}
       <View style={styles.viewTTS}>
         {/* View TTS */}
-
       </View>
-
       <View style={styles.viewItens}>
         {/* Views corpo */}
         <FlatList 
+          contentContainerStyle={styles.flatlistItem}
           data ={data}
           renderItem = {renderItem}
           numColumns={columns}
