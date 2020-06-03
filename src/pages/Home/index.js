@@ -63,7 +63,20 @@ const HomePage = () => {
   )
 
   function setItem(item){ //Abrir as imagens da categoria
-    setData(data[data.findIndex(obj => obj.id === item.id)].images)
+    const dataItem = data[data.findIndex(obj => obj.id === item.id)].images;
+
+    const iconAdd = {
+      id: Math.random(),
+      name: "Adicionar",
+      uri: require('./icons/icon_add.png'),
+      isAdd: true,
+    }
+
+    let newData = []
+    newData.push(iconAdd)
+    newData.push(dataItem)
+
+    setData(newData)
     setIsCategory(false)
   }
 
