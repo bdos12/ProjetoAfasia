@@ -12,13 +12,16 @@ import {
 
 import { deleteItem, saveRealm, loadRealm } from '../../services/realm'
 
+
 import styles from './styles'
 
 const HomePage = () => {
   const columns = 4
   const [data, setData] = useState([{}])
+  const [imagesTTs, setImagesTTs] = useState([])
   const [isCategory, setIsCategory] = useState(true)
   const [idCategory, setIdCategory] = useState(0)
+  const [text, setText] = useState('')
 
   useEffect(() => {
     console.log("[useEffect] - call function loadItemBD")
@@ -63,6 +66,7 @@ const HomePage = () => {
   )
 
   function setItem(item){ //Abrir as imagens da categoria
+    console.log(`[SetItem] - Set data in category ${item.name}`)
     const dataItem = data[data.findIndex(obj => obj.id === item.id)].images;
 
     const iconAdd = {
@@ -74,20 +78,38 @@ const HomePage = () => {
 
     let newData = []
     newData.push(iconAdd)
-    newData.push(dataItem)
+    newData.push(...dataItem)
 
     setData(newData)
     setIsCategory(false)
   }
 
-  async function handlerDeleteItem(item){
+  async function handlerDeleteItem(item){ //Deletando item do banco de dados
     await deleteItem(item)
     .then(() => loadItemBD())
     .catch(err => console.log(err))
   }
 
-  function renderItem({item}){ //Render > 
-    if(item.isAdd){
+
+  function addTTs(obj){
+    console.log(`[addTTs] - add "${obj.name}" in TTs`)
+    const newItemTTs = {
+      id: Math.random() * 10,
+      name: obj.name,
+      uri: obj.uri,
+      idCategory: obj.idCategory,
+      isCategory: false,
+    }
+    let newImagesTTS = imagesTTs;
+    newImagesTTS.push(newItemTTs) 
+    
+    let newTextTTs = `${text} ${newItemTTs.name}`
+    setImagesTTs(newImagesTTS)
+    setText(newTextTTs)
+  }
+
+  function renderItem({item}){ //Render > Flatlist >  ViewItens
+    if(item.isAdd){ //Implementar add Image
     return(
         <View style={styles.item}>
           <TouchableOpacity
@@ -120,6 +142,7 @@ const HomePage = () => {
     return(
     <View style={styles.item}>
         <TouchableOpacity
+          onPress={() => addTTs(item)}
           onLongPress={() => 
           Alert.alert('Apagar', `Apagar imagem ${item.name}?`,[
               {text: 'Sim', onPress: () => handlerDeleteItem(item)},
@@ -135,11 +158,63 @@ const HomePage = () => {
     );
 }
 
+  function renderTTS(obj) {
+    return(
+      <View>
+        <TouchableOpacity
+        onLongPress={item =>
+          Alert.alert('Apagar', 'Deseja apagar?', [
+            {text: 'Sim', onPress: () => {}},
+            {text: 'Não'},
+          ])
+        }
+        delayLongPress={1500}>
+        
+        <Image
+            style={styles.imagesTTS}
+            source={{uri: obj.item.uri}}
+            />
+          <Text style={styles.textItemTTS}>{obj.item.name}</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}> 
       {/* View Principal */}
       <View style={styles.viewTTS}>
         {/* View TTS */}
+        <FlatList
+          style={styles.flatListTTS}
+          data={imagesTTs}
+          horizontal
+          renderItem={renderTTS}
+          keyExtractor={item => String(item.id)}
+        />
+        <View styles={styles.viewIconsTTS}>
+          <TouchableOpacity onPress={() => {}}>
+            <Image
+              style={styles.iconsTTS}
+              source={require('./icons/icon_play.png')}
+            />
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => {}}
+            onLongPress={() =>
+              Alert.alert('Apagar', 'Deseja apagar tudo?', [
+                {text: 'Sim', onPress: () => {}},
+                {text: 'Não'},
+              ])
+            }
+            delayLongPress={1500}>
+            <Image
+              style={styles.iconsTTS}
+              source={require('./icons/icon_excluir.png')}
+              />
+            </TouchableOpacity>
+          </View>
       </View>
       <View style={styles.viewItens}>
         {/* Views corpo */}
