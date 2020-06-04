@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   Text, 
   Image,
-  DrawerLayoutAndroidComponent, 
+  Modal, 
 } from 'react-native';
 
 import { deleteItem, saveRealm, loadRealm } from '../../services/realm'

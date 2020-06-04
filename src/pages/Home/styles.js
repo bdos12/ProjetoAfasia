@@ -17,7 +17,8 @@ const styles = StyleSheet.create({
   viewTTS: { //Container do TTS
     height: deviceHeight * 0.23,
     backgroundColor: "#c1c1c1",
-    flex:1,
+    flexDirection: 'row',
+    // flex:1,
   },
 
   flatListTTS:{ //  FlatList > ViewTTS 
@@ -50,7 +51,7 @@ const styles = StyleSheet.create({
     margin: 2,
     width: deviceWidth * 0.1, 
     height: deviceHeight * 0.1,
-    marginTop: -1,
+    // marginTop: -1,
     resizeMode:'contain',
   },
 
