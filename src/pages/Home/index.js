@@ -22,6 +22,7 @@ const HomePage = () => {
   const [isCategory, setIsCategory] = useState(true)
   const [idCategory, setIdCategory] = useState(0)
   const [text, setText] = useState('')
+  const [modalVisible, setModalVisible] = useState(false)
 
   useEffect(() => {
     console.log("[useEffect] - call function loadItemBD")
@@ -92,7 +93,7 @@ const HomePage = () => {
 
 
   function addTTs(obj){
-    console.log(`[addTTs] - add "${obj.name}" in TTs`)
+    console.log(`[addTTs] - Add "${obj.name}" in TTs`)
     const newItemTTs = {
       id: Math.random() * 10,
       name: obj.name,
@@ -113,7 +114,10 @@ const HomePage = () => {
     return(
         <View style={styles.item}>
           <TouchableOpacity
-              onPress={() => console.log("[Implementar] - Adicionar item/categoria")}
+              onPress={() => {
+                setModalVisible(true)
+                console.log("[Implementar] - Adicionar item/categoria")
+              }}
           >
               <Image style={styles.images} source={require('./icons/icon_add.png')}/>
               <Text style={styles.textItem}>{item.name}</Text>
@@ -162,9 +166,9 @@ const HomePage = () => {
     return(
       <View>
         <TouchableOpacity
-        onLongPress={item =>
+        onLongPress={() =>
           Alert.alert('Apagar', 'Deseja apagar?', [
-            {text: 'Sim', onPress: () => {}},
+            {text: 'Sim', onPress: () => deleteTTS(obj.item)},
             {text: 'Não'},
           ])
         }
@@ -180,9 +184,39 @@ const HomePage = () => {
     );
   }
 
+  function deleteTTS(obj){
+    console.log(`[deleteTTS] - Deleting item ${obj.name} on TTS`)
+    let newItensTTs = imagesTTs
+    if(obj){
+      newItensTTs = imagesTTs.filter(item => item.id !== obj.id)
+    }else{
+      newItensTTs.pop()
+    }
+    setImagesTTs([...newItensTTs])
+    
+  }
+
   return (
     <View style={styles.container}> 
       {/* View Principal */}
+      <Modal 
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        statusBarTranslucent={false}
+        onRequestClose={() => {
+
+          setModalVisible(false)
+        }}
+      >
+
+        {/* Modal React-nativere */}
+        <View style={{alignSelf: 'center' ,width: 200, height: 200, backgroundColor: "#f00"}}>
+
+          <Text>Oi, modal</Text>
+        </View>
+      </Modal>
+
       <View style={styles.viewTTS}>
         {/* View TTS */}
         <FlatList
@@ -201,10 +235,13 @@ const HomePage = () => {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => {}}
+            onPress={() => deleteTTS()}
             onLongPress={() =>
               Alert.alert('Apagar', 'Deseja apagar tudo?', [
-                {text: 'Sim', onPress: () => {}},
+                {text: 'Sim', onPress: () => {
+                  console.log(`Deleting All items in TTs`)
+                  setImagesTTs([])
+                }},
                 {text: 'Não'},
               ])
             }

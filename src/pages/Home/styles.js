@@ -18,7 +18,6 @@ const styles = StyleSheet.create({
     height: deviceHeight * 0.23,
     backgroundColor: "#c1c1c1",
     flexDirection: 'row',
-    // flex:1,
   },
 
   flatListTTS:{ //  FlatList > ViewTTS 
@@ -30,8 +29,8 @@ const styles = StyleSheet.create({
     width: deviceWidth * 0.12,
     height: deviceHeight * 0.15,
     alignSelf: 'center',
-    // resizeMode: 'contain',
     marginTop: 8,
+    marginLeft: 10
   },
   textItemTTS:{ //Text imag > FlatListTTS
     textAlign: 'center',
@@ -44,14 +43,11 @@ const styles = StyleSheet.create({
     height: '100%',
     flex: 1,
     backgroundColor: '#fff',
-    // alignItems: 'flex-end',
-    // flexDirection: 'column',
   },
   iconsTTS:{ // Icons > viewIconsTTS
     margin: 2,
     width: deviceWidth * 0.1, 
     height: deviceHeight * 0.1,
-    // marginTop: -1,
     resizeMode:'contain',
   },
 
