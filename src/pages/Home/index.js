@@ -10,15 +10,10 @@ import {
   TextInput 
 } from 'react-native';
 import Modal from "react-native-modal";
-
-
-import { deleteItem, saveRealm, loadRealm } from '../../services/realm'
-
 import ImagePicker from 'react-native-image-picker';
-
 import ImageResizer from 'react-native-image-resizer';
 import ImgToBase64 from 'react-native-image-base64';
-
+import { deleteItem, saveRealm, loadRealm } from '../../services/realm'
 
 import styles from './styles'
 
@@ -34,9 +29,7 @@ var optionsImagePicker = {
   },
 }
 
-
 const HomePage = () => {
-  const columns = 4
   const [data, setData] = useState([{}])
   const [imagesTTs, setImagesTTs] = useState([])
   const [isCategory, setIsCategory] = useState(true)
@@ -140,9 +133,8 @@ const HomePage = () => {
     newData.push(iconAdd)
     newData.push(...dataItem)
 
+    setIdCategory(item.id)
     setPositionCategory(data.findIndex(obj => obj.id === item.id))
-
-
     setData(newData)
     setIsCategory(false)
   }
@@ -439,7 +431,7 @@ const HomePage = () => {
           contentContainerStyle={styles.flatlistItem}
           data ={data}
           renderItem = {renderItem}
-          numColumns={columns}
+          numColumns={4}
           keyExtractor = {(item) => String(item.id)}
         />
       </View>
