@@ -7,13 +7,33 @@ import {
   TouchableOpacity,
   Text, 
   Image,
-  Modal, 
+  TextInput 
 } from 'react-native';
+import Modal from "react-native-modal";
+
 
 import { deleteItem, saveRealm, loadRealm } from '../../services/realm'
 
+import ImagePicker from 'react-native-image-picker';
+
+import ImageResizer from 'react-native-image-resizer';
+import ImgToBase64 from 'react-native-image-base64';
+
 
 import styles from './styles'
+
+var optionsImagePicker = {
+    title: 'Selecionar Imagem',
+    takePhotoButtonTitle: 'Tirar uma foto',
+    chooseFromLibraryButtonTitle: 'Escolher da galeria',
+    quality: 1,
+    noData: true,
+    storageOptions: {
+    skipBackup: true,
+    path: 'images',
+  },
+}
+
 
 const HomePage = () => {
   const columns = 4
@@ -21,8 +41,14 @@ const HomePage = () => {
   const [imagesTTs, setImagesTTs] = useState([])
   const [isCategory, setIsCategory] = useState(true)
   const [idCategory, setIdCategory] = useState(0)
+  const [positionCategory, setPositionCategory] = useState(0)
   const [text, setText] = useState('')
-  const [modalVisible, setModalVisible] = useState(false)
+  const [firstModal, setFirstModal] = useState(false)
+  const [secondModal, setSecondModal] = useState(false)
+  const [uriItemSelected, setUriItemSelected] = useState(' ')
+  const [nameItemSelected, setNameItemSelected] = useState('')
+  const [cameraOrGallery, setCameraOrGallery] = useState('')
+
 
   useEffect(() => {
     console.log("[useEffect] - call function loadItemBD")
@@ -43,6 +69,39 @@ const HomePage = () => {
       console.log("[Error loadItemBD] - " + err)
       alert(err)
     })
+  }
+
+  async function handleSaveRealm() {
+    console.log(`[handleSaveRealm] - Saving ${nameItemSelected} in BD`)
+    let item = {
+      name: nameItemSelected,
+      uri: uriItemSelected,
+      idCategory: idCategory
+    }
+    if (item.name === ' ' || item.uri === ' '){
+      return Alert.alert("Erro ao adicionar!", "Precisa adicionar uma imagem e um nome.")
+    }
+    if(isCategory){
+      await saveRealm(item, 1, positionCategory)
+      .then(() => {
+        setNameItemSelected('')
+        setUriItemSelected(' ')
+        loadItemBD()
+        setFirstModal(false)
+        setSecondModal(false)
+      })
+      .catch(err => alert(err))
+    }else{
+      await saveRealm(item, 2, positionCategory)
+      .then(() => {
+        setNameItemSelected('')
+        setUriItemSelected(' ')
+        loadItemBD()
+        setFirstModal(false)
+        setSecondModal(false)
+      })
+      .catch(err => alert(err))
+    }
   }
 
   BackHandler.addEventListener( //Quando o botão de voltar do celular é pressionado
@@ -81,6 +140,9 @@ const HomePage = () => {
     newData.push(iconAdd)
     newData.push(...dataItem)
 
+    setPositionCategory(data.findIndex(obj => obj.id === item.id))
+
+
     setData(newData)
     setIsCategory(false)
   }
@@ -91,8 +153,7 @@ const HomePage = () => {
     .catch(err => console.log(err))
   }
 
-
-  function addTTs(obj){
+  function addTTs(obj){ //Add item > FlatList> ViewTTS
     console.log(`[addTTs] - Add "${obj.name}" in TTs`)
     const newItemTTs = {
       id: Math.random() * 10,
@@ -115,7 +176,7 @@ const HomePage = () => {
         <View style={styles.item}>
           <TouchableOpacity
               onPress={() => {
-                setModalVisible(true)
+                setFirstModal(true)
                 console.log("[Implementar] - Adicionar item/categoria")
               }}
           >
@@ -162,7 +223,7 @@ const HomePage = () => {
     );
 }
 
-  function renderTTS(obj) {
+  function renderTTS(obj) { // Render > Flatlist > ViewTTS
     return(
       <View>
         <TouchableOpacity
@@ -184,10 +245,10 @@ const HomePage = () => {
     );
   }
 
-  function deleteTTS(obj){
-    console.log(`[deleteTTS] - Deleting item ${obj.name} on TTS`)
+  function deleteTTS(obj){ //Delete item > Flatlist > viewTTS
     let newItensTTs = imagesTTs
     if(obj){
+      console.log(`[deleteTTS] - Deleting item ${obj.name} on TTS`)
       newItensTTs = imagesTTs.filter(item => item.id !== obj.id)
     }else{
       newItensTTs.pop()
@@ -196,24 +257,143 @@ const HomePage = () => {
     
   }
 
+  function selectMediaCamera(){
+    ImagePicker.launchCamera(optionsImagePicker, response => {
+      if (response.error) {
+          alert('ImagePicker Error: ', response.error);
+      }else {
+        if(response.path){
+        ImageResizer.createResizedImage(response.path, 800, 600, 'JPEG', 100)
+        .then(({uri}) => {
+            ImgToBase64.getBase64String(uri)
+            .then(base64String => {
+                let uri = 'data:image/jpeg;base64,' + base64String
+                setUriItemSelected(uri)
+            }).catch(err => {alert(err)})
+        }).catch(err => alert(err))
+        }
+      }
+    });
+  }
+
+  function selectMediaGallery(){
+    ImagePicker.launchImageLibrary(optionsImagePicker, response => {
+      if (response.error) {
+          alert('ImagePicker Error: ', response.error);
+      }else {
+        if(response.path){
+        ImageResizer.createResizedImage(response.path, 800, 600, 'JPEG', 100)
+        .then(({uri}) => {
+            ImgToBase64.getBase64String(uri)
+            .then(base64String => {
+                let uri = 'data:image/jpeg;base64,' + base64String
+                setUriItemSelected(uri)
+            }).catch(err => {alert(err)})
+        }).catch(err => alert(err))
+        }
+      }
+    });
+  }
+
+
   return (
     <View style={styles.container}> 
       {/* View Principal */}
+      {/* FirstModal */}
       <Modal 
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        statusBarTranslucent={false}
-        onRequestClose={() => {
-
-          setModalVisible(false)
+        isVisible={firstModal}
+        onBackButtonPress={() => {
+          setFirstModal(false)
         }}
       >
+        <View style={styles.Modal}>
+          <Text style={styles.modalTopAndButtonText}>Adicionar</Text>
 
-        {/* Modal React-nativere */}
-        <View style={{alignSelf: 'center' ,width: 200, height: 200, backgroundColor: "#f00"}}>
+          <View style={styles.firstModalViewIcons}>
+            <TouchableOpacity onPress={() =>{
+              setCameraOrGallery("Câmera")
+              selectMediaCamera()
+              setSecondModal(true)
+              
+              }}>
+              <Image style={styles.firstModalIcon} source={require('./icons/icon_camera.png')}/>
+              <Text style={styles.firstModalIconText}>Câmera</Text>          
+            </TouchableOpacity>
 
-          <Text>Oi, modal</Text>
+            <TouchableOpacity onPress={() =>{
+              setCameraOrGallery("Galeria")
+              selectMediaGallery()
+              setSecondModal(true)
+              }}>
+              <Image style={styles.firstModalIcon} source={require('./icons/icon_gallery.png')}/>
+              <Text style={styles.firstModalIconText}>Galeria</Text>
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity style={styles.firstModalButton} 
+            onPress={() => setFirstModal(false)}
+          >
+            <Text style={styles.modalTopAndButtonText}>Cancelar</Text>
+          </TouchableOpacity>
+        </View>
+      </Modal>
+
+      {/* SecondModal */}
+      <Modal
+        isVisible={secondModal}
+        onBackButtonPress={() => {
+          setSecondModal(false)
+          setNameItemSelected('')
+          setUriItemSelected(' ')
+        }}
+      >
+        <View style={styles.Modal}>
+        <Text style={styles.modalTopAndButtonText}>Adicionar da {cameraOrGallery}</Text>
+
+          {uriItemSelected === ' ' 
+          ? 
+            <TouchableOpacity onPress={() => {
+              if(cameraOrGallery === 'Câmera'){
+                selectMediaCamera()
+              }else if (cameraOrGallery === 'Galeria'){
+                selectMediaGallery()
+              }
+            }}>
+              <Image style={styles.secondModalImageSelected} source={require('./icons/icon_add.png')}/>
+            </TouchableOpacity>
+          :
+            <Image style={styles.secondModalImageSelected} source={{uri: uriItemSelected}}/>
+
+          }
+
+
+
+          <Text style={styles.secondModalImageText}>Nome:</Text>
+          <TextInput 
+            style={styles.secondModalInput}
+            value={nameItemSelected}
+            onChangeText={name => setNameItemSelected(name)}
+          />
+
+        <View style={styles.secondModalViewBottom}>
+
+          <TouchableOpacity style={styles.secondModalButton} onPress={() => {
+            setFirstModal(false)
+            setSecondModal(false)
+            setNameItemSelected('')
+            setUriItemSelected(' ')
+            }}>
+            <Text style={styles.modalTopAndButtonText}>Cancelar</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.secondModalButton}
+            onPress={() => handleSaveRealm()}
+          >
+            <Text style={styles.modalTopAndButtonText}>Adicionar</Text>
+          </TouchableOpacity>
+
+        </View>
+
         </View>
       </Modal>
 

@@ -8,9 +8,8 @@ const styles = StyleSheet.create({
     height: deviceHeight,
     width: deviceWidth,
     backgroundColor: "#e1e1e1",
-    flexDirection: 'column'
+    flexDirection: 'column',
   },
-
 
   //TTS:
 
@@ -84,7 +83,83 @@ textItem: { //Text Itens > RenderItem > flatList > viewItens
     width: deviceWidth,
     paddingBottom: 60,
   },
-  
+
+
+  //Modal geral Config
+  Modal: {
+    width: deviceWidth * 0.4,
+    height: deviceWidth * 0.4,
+    backgroundColor: "#e1e1e1",
+    alignSelf: 'center',
+    marginTop: '10%',
+    borderColor: '#d1d1d1',
+    borderWidth: 2
+  },
+  modalTopAndButtonText: {
+    textAlign:'center',
+    fontSize: deviceWidth * 0.02,
+    marginTop: '4%',
+
+  }, 
+
+
+  //First Modal
+  firstModalViewIcons:{
+    flexDirection:'row',
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+    marginTop: '15%',
+  }, 
+  firstModalIcon: {
+    height: deviceHeight * 0.25,
+    width: deviceWidth * 0.15,
+    resizeMode:"contain",
+
+  },
+  firstModalIconText: {
+    textAlign: 'center',
+    fontSize: deviceWidth * 0.02
+  },
+  firstModalButton: {
+    flex: 1,
+    marginTop: '10%',
+    backgroundColor: '#f0f0f0'
+  },
+
+
+  //Second modal
+  secondModalImageSelected: {
+    alignSelf: 'center',
+    marginTop: '3%',
+    height: deviceHeight * 0.25,
+    width: deviceWidth * 0.15,
+    resizeMode:"contain",
+
+  },
+  secondModalImageText: {
+    textAlign: 'center',
+    marginTop: '2%',
+    fontSize: deviceWidth * 0.015,
+  },
+  secondModalInput: {
+    alignSelf: 'center',
+    height: deviceHeight * 0.08,
+    width: deviceWidth * 0.3,
+    fontSize: deviceWidth * 0.02,
+    borderWidth: 1,
+    backgroundColor: '#fff'
+
+  },
+  secondModalViewBottom: {
+    flex:1,
+    flexDirection:'row',
+    alignItems: 'center',
+    justifyContent: 'space-evenly',
+    marginTop: '10%',
+  },
+  secondModalButton: {
+    flex: 1,
+  },
 })  
   
 export default styles;
