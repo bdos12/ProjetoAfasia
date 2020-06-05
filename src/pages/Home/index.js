@@ -9,11 +9,14 @@ import {
   Image,
   TextInput 
 } from 'react-native';
+
 import Modal from "react-native-modal";
 import ImagePicker from 'react-native-image-picker';
 import ImageResizer from 'react-native-image-resizer';
 import ImgToBase64 from 'react-native-image-base64';
 import { deleteItem, saveRealm, loadRealm } from '../../services/realm'
+import speak from '../../services/tts';
+
 
 import styles from './styles'
 
@@ -237,6 +240,15 @@ const HomePage = () => {
     );
   }
 
+  function handleSpeak(){
+    let text = new String()
+    imagesTTs.forEach(item => {
+      text = `${text} ${item.name}`
+    })
+    console.log(`[handleSpeak] - Speak "${text}"`)
+    speak(text)
+  }
+
   function deleteTTS(obj){ //Delete item > Flatlist > viewTTS
     let newItensTTs = imagesTTs
     if(obj){
@@ -399,7 +411,7 @@ const HomePage = () => {
           keyExtractor={item => String(item.id)}
         />
         <View styles={styles.viewIconsTTS}>
-          <TouchableOpacity onPress={() => {}}>
+          <TouchableOpacity onPress={() => handleSpeak()}>
             <Image
               style={styles.iconsTTS}
               source={require('./icons/icon_play.png')}
