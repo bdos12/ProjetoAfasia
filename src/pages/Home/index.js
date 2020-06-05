@@ -68,13 +68,13 @@ const HomePage = () => {
   }
 
   async function handleSaveRealm() {
-    console.log(`[handleSaveRealm] - Saving ${nameItemSelected} in BD`)
+    console.log(`[handleSaveRealm] - Saving in BD`)
     let item = {
       name: nameItemSelected,
       uri: uriItemSelected,
       idCategory: idCategory
     }
-    if (item.name === ' ' || item.uri === ' '){
+    if (item.name === '' || item.uri === ' '){
       return Alert.alert("Erro ao adicionar!", "Precisa adicionar uma imagem e um nome.")
     }
     if(isCategory){
@@ -172,7 +172,6 @@ const HomePage = () => {
           <TouchableOpacity
               onPress={() => {
                 setFirstModal(true)
-                console.log("[Implementar] - Adicionar item/categoria")
               }}
           >
               <Image style={styles.images} source={require('./icons/icon_add.png')}/>
@@ -240,7 +239,7 @@ const HomePage = () => {
     );
   }
 
-  function handleSpeak(){
+  function handleSpeak(){ //Funcionalidade de falar
     let text = new String()
     imagesTTs.forEach(item => {
       text = `${text} ${item.name}`
@@ -261,7 +260,7 @@ const HomePage = () => {
     
   }
 
-  function selectMediaCamera(){
+  function selectMediaCamera(){ //Abrir camera para selecionar item
     ImagePicker.launchCamera(optionsImagePicker, response => {
       if (response.error) {
           alert('ImagePicker Error: ', response.error);
@@ -280,7 +279,7 @@ const HomePage = () => {
     });
   }
 
-  function selectMediaGallery(){
+  function selectMediaGallery(){ //Abrir galeria para selecionar item
     ImagePicker.launchImageLibrary(optionsImagePicker, response => {
       if (response.error) {
           alert('ImagePicker Error: ', response.error);
