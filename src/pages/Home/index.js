@@ -17,7 +17,6 @@ import ImgToBase64 from 'react-native-image-base64';
 import { deleteItem, saveRealm, loadRealm } from '../../services/realm'
 import speak from '../../services/tts';
 
-
 import styles from './styles'
 
 var optionsImagePicker = {
@@ -365,7 +364,16 @@ const HomePage = () => {
               <Image style={styles.secondModalImageSelected} source={require('./icons/icon_add.png')}/>
             </TouchableOpacity>
           :
+          <TouchableOpacity onPress={() => {
+            if(cameraOrGallery === 'Câmera'){
+              selectMediaCamera()
+            }else if (cameraOrGallery === 'Galeria'){
+              selectMediaGallery()
+            }
+          }}>
             <Image style={styles.secondModalImageSelected} source={{uri: uriItemSelected}}/>
+
+          </TouchableOpacity>
 
           }
 
