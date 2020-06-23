@@ -1,8 +1,10 @@
 import Realm from 'realm'
 import {Alert} from 'react-native'
 
-import CategorySchema from '../schemas/CategorySchema'
-import ImagesSchema from '../schemas/ImagesSchema'
+import CategorySchema from './schemas/CategorySchema'
+import ImagesSchema from './schemas/ImagesSchema'
+
+import imageRecognition from '../TensorFlow'
 
 export default function getRealm() {
   return Realm.open({
@@ -25,7 +27,9 @@ export async function deleteItem(item){
   }
 }
 
-export async function saveRealm(category, option, positionCategory){ //Salvar categoria/imagem no banco de dados
+export async function saveRealm(category, option, positionCategory, imagePath){ //Salvar categoria/imagem no banco de dados
+  const description = await imageRecognition(imagePath)
+  console.log(`Description Save Realm: ${description}`)
   try{
     let data = {}
     if(option === 1){
@@ -43,7 +47,8 @@ export async function saveRealm(category, option, positionCategory){ //Salvar ca
             idCategory: categoryID,
             name: category.name,
             uri: category.uri,
-            isCategory: false
+            isCategory: false,
+            description: description
           },
         ],
         isCategory: true,
@@ -66,7 +71,9 @@ export async function saveRealm(category, option, positionCategory){ //Salvar ca
           name: category.name,
           uri: category.uri,
           idCategory: category.idCategory,
-          isCategory: false
+          isCategory: false,
+          description: description
+
         }
         realm.write(() => {
           realm.objects('Category')[id - 1].images.push(data)
@@ -77,7 +84,8 @@ export async function saveRealm(category, option, positionCategory){ //Salvar ca
     
 
   }catch (err){
-    Alert.alert('Erro', 'É necessário adicionar uma imagem e um nome')
+    console.log(err)
+    // Alert.alert('Erro', 'É necessário adicionar uma imagem e um nome')
   }
 }
 
@@ -89,7 +97,7 @@ export async function loadRealm(data){
   const add = {
     id: Math.random(),
     name: "Adicionar",
-    uri: require('../pages/Home/icons/icon_add.png'),
+    uri: require('../../pages/Home/icons/icon_add.png'),
     isAdd: true,
   };
 

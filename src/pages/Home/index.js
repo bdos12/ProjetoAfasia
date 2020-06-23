@@ -15,7 +15,9 @@ import ImagePicker from 'react-native-image-picker';
 import ImageResizer from 'react-native-image-resizer';
 import ImgToBase64 from 'react-native-image-base64';
 import { deleteItem, saveRealm, loadRealm } from '../../services/realm'
-import speak from '../../services/tts';
+import speak from '../../services/TTs';
+import imageRecognition from '../../services/TensorFlow'
+
 
 import styles from './styles'
 
@@ -43,7 +45,7 @@ const HomePage = () => {
   const [uriItemSelected, setUriItemSelected] = useState(' ')
   const [nameItemSelected, setNameItemSelected] = useState('')
   const [cameraOrGallery, setCameraOrGallery] = useState('')
-
+  const [imagePathSelected, setImagePathSelected] = useState('')
 
   useEffect(() => {
     console.log("[useEffect] - call function loadItemBD")
@@ -77,7 +79,7 @@ const HomePage = () => {
       return Alert.alert("Erro ao adicionar!", "Precisa adicionar uma imagem e um nome.")
     }
     if(isCategory){
-      await saveRealm(item, 1, positionCategory)
+      await saveRealm(item, 1, positionCategory, imagePathSelected)
       .then(() => {
         setNameItemSelected('')
         setUriItemSelected(' ')
@@ -87,7 +89,7 @@ const HomePage = () => {
       })
       .catch(err => alert(err))
     }else{
-      await saveRealm(item, 2, positionCategory)
+      await saveRealm(item, 2, positionCategory, imagePathSelected)
       .then(() => {
         setNameItemSelected('')
         setUriItemSelected(' ')
@@ -175,6 +177,8 @@ const HomePage = () => {
           >
               <Image style={styles.images} source={require('./icons/icon_add.png')}/>
               <Text style={styles.textItem}>{item.name}</Text>
+              <Text style={styles.textItem}>{item.description}</Text>
+
           </TouchableOpacity>
         </View>
     );
@@ -193,6 +197,8 @@ const HomePage = () => {
               delayLongPress={300}>
               <Image style={styles.images} source={{uri: item.uri}}/>
               <Text style={styles.textItem}>{item.name}</Text>
+              <Text style={styles.textItem}>{item.description}</Text>
+
           </TouchableOpacity>
         </View>
     );
@@ -210,6 +216,7 @@ const HomePage = () => {
           delayLongPress={300}>
           <Image style={styles.images} source={{uri: item.uri}}/>
           <Text style={styles.textItem}>{item.name}</Text>
+          <Text style={styles.textItem}>{item.description}</Text>
 
         </TouchableOpacity>
     </View>
@@ -271,6 +278,7 @@ const HomePage = () => {
             .then(base64String => {
                 let uri = 'data:image/jpeg;base64,' + base64String
                 setUriItemSelected(uri)
+                setImagePathSelected(response.path)
             }).catch(err => {alert(err)})
         }).catch(err => alert(err))
         }
@@ -290,6 +298,8 @@ const HomePage = () => {
             .then(base64String => {
                 let uri = 'data:image/jpeg;base64,' + base64String
                 setUriItemSelected(uri)
+                setImagePathSelected(response.path)
+
             }).catch(err => {alert(err)})
         }).catch(err => alert(err))
         }

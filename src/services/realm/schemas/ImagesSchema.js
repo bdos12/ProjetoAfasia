@@ -7,7 +7,8 @@ export default class ImagesSchema {
       idCategory: 'int',
       name: 'string',
       uri: 'string',
-      isCategory: {type: 'bool', default: false}
+      isCategory: {type: 'bool', default: false},
+      description: 'string'
     }
   }
 }
