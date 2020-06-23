@@ -1,446 +1,461 @@
-import React, {Component} from 'react';
-import {
-  SafeAreaView,
-  Alert,
+import React, {useState, useEffect} from 'react';
+import { 
+  View, 
+  FlatList, 
+  Alert, 
   BackHandler,
   TouchableOpacity,
+  Text, 
   Image,
-  Text,
-  View,
-  TextInput,
-  Dimensions,
-  FlatList, 
+  TextInput 
 } from 'react-native';
-import getRealm, { deleteItem, saveRealm }from '../../services/realm';
-import speak from '../../services/tts';
+
 import Modal from "react-native-modal";
 import ImagePicker from 'react-native-image-picker';
 import ImageResizer from 'react-native-image-resizer';
 import ImgToBase64 from 'react-native-image-base64';
+import { deleteItem, saveRealm, loadRealm } from '../../services/realm'
+import speak from '../../services/tts';
 
 import styles from './styles'
 
-let deviceWidth = Dimensions.get('window').width
+var optionsImagePicker = {
+    title: 'Selecionar Imagem',
+    takePhotoButtonTitle: 'Tirar uma foto',
+    chooseFromLibraryButtonTitle: 'Escolher da galeria',
+    quality: 1,
+    noData: true,
+    storageOptions: {
+    skipBackup: true,
+    path: 'images',
+  },
+}
+
+const HomePage = () => {
+  const [data, setData] = useState([{}])
+  const [imagesTTs, setImagesTTs] = useState([])
+  const [isCategory, setIsCategory] = useState(true)
+  const [idCategory, setIdCategory] = useState(0)
+  const [positionCategory, setPositionCategory] = useState(0)
+  const [text, setText] = useState('')
+  const [firstModal, setFirstModal] = useState(false)
+  const [secondModal, setSecondModal] = useState(false)
+  const [uriItemSelected, setUriItemSelected] = useState(' ')
+  const [nameItemSelected, setNameItemSelected] = useState('')
+  const [cameraOrGallery, setCameraOrGallery] = useState('')
 
 
-module.exports = class HomePage extends Component {
-  static navigationOptions = {
-    // Propriedades da navegação
-    title: 'INICIO',
-    titleStyle:{
-      fontSize: 40,
-    },
-    headerStyle: {
-      backgroundColor: '#b8daf5',
-    },
-  };
+  useEffect(() => {
+    console.log("[useEffect] - call function loadItemBD")
+    loadItemBD()
+  }, [])
+  
+  async function loadItemBD(){ // Carregar itens do banco de dados
+    console.log("[loadItemBD] - Init")
+    console.log("[loadItemBD] - call function loadRealm")
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      nome: ' ',
-      uri: ' ',
-      text: '',
-      nameCategory: ' ',
-      idCategory: 0,
-      positionCategory: 0,
-      isCategory: true,
-      data: [],
-      imagesTTS: [],
-      isVisible: false,
-      select: true,
-    };
-    this.loadRealm();
+    await loadRealm()
+    .then(item => {
+      setData(item)
+      setIsCategory(true)
+      console.log("[loadItemBD] - Loading items Done")
+    })
+    .catch(err => {
+      console.log("[Error loadItemBD] - " + err)
+      alert(err)
+    })
   }
 
-  componentDidMount() {
-    this.BackHandler = BackHandler.addEventListener(
-      'hardwareBackPress', () => 
-      {
-        this.loadRealm()
-        this.setState({isCategory: true})
-        return true
-      },
-    );
-  }
-
-  async loadRealm() {
-    // Carregar itens do banco de dados
-    const realm = await getRealm();
-
-    const add = {
-      id: Math.random() + 100,
-      name: 'Adicionar',
-      uri: require('./icons/add-circle-512.png'),
-      isAdd: true,
-    };
-
-    let itens = []
-    itens.push(add)
-    itens.push(...realm.objects('Category'))
-
-
-    this.setState({data: itens})
-
-  }
-
-  setDate = item => {
-    // Alterar o estado e renderizar as imagens
-    const temp = this.state.data[
-      this.state.data.findIndex(obj => obj.id === item.id)
-    ].images;
-
-    const data = [];
-    const add = {
-      id: Math.random() + 100,
-      name: 'Adicionar ',
-      uri: require('./icons/add-circle-512.png'),
-      isAdd: true,
-    };
-
-    data.push(add);
-    data.push(... temp);
-
-    this.setState({idCategory: item.id});
-    this.setState({positionCategory: this.state.data.findIndex(obj => obj.id === item.id)});
-
-    this.setState({nameCategory: item.name});
-    this.setState({data});
-    this.setState({isCategory: false});
-  };
-
-  async handleDeleteItem (item) {
-    // Deletar item do Banco de dados
-    await deleteItem(item);
-    this.loadRealm();
-  };
-
-  handleAddItem = () => {
-    this.setState({isVisible: true})
-  };
-
-  renderItem = ({item}) => { // Rendeizar os itens da FlatList
-    
-    if (item.isAdd) {
-      return (
-        <View style={styles.ViewItens}>
-          <TouchableOpacity
-            onPress={() => this.handleAddItem()}>
-            <Image
-              style={styles.Images}
-              source={require('./icons/icon_add.png')}
-              />
-            <Text style={styles.textItens}>{item.name}</Text>
-
-          </TouchableOpacity>
-        </View>
-      );
+  async function handleSaveRealm() {
+    console.log(`[handleSaveRealm] - Saving in BD`)
+    let item = {
+      name: nameItemSelected,
+      uri: uriItemSelected,
+      idCategory: idCategory
     }
-    if (item.isCategory) {
-      return (
-        <View style={styles.ViewItens}>
-          <TouchableOpacity
-            onPress={() => {
-              this.setDate(item);
-            }}
-            onLongPress={() =>
-              Alert.alert('Apagar ', `Apagar categoria ${item.name}?`, [
-                {text: 'Sim', onPress: () => this.handleDeleteItem(item)},
-                {text: 'Não'},
-              ])
-            }
-            delayLongPress={300}>
-            <Image style={styles.Images} source={{uri: item.uri}} />
-            <Text style={styles.textItens}>{item.name}</Text>
-
-          </TouchableOpacity>
-        </View>
-      );
+    if (item.name === '' || item.uri === ' '){
+      return Alert.alert("Erro ao adicionar!", "Precisa adicionar uma imagem e um nome.")
     }
-    return (
-      <View style={styles.ViewItens}>
-        <TouchableOpacity
-          onLongPress={() =>
-            Alert.alert('Apagar ', `Apagar o item ${item.name}?`, [
-              {text: 'Sim', onPress: () => this.handleDeleteItem(item)},
-              {text: 'Não'},
-            ])
-          }
-          delayLongPress={300}
-          onPress={() => this.addTTS(item)}>
-          <Image style={styles.Images} source={{uri: item.uri}} />
-          <Text style={styles.textItens}>{item.name}</Text>
+    if(isCategory){
+      await saveRealm(item, 1, positionCategory)
+      .then(() => {
+        setNameItemSelected('')
+        setUriItemSelected(' ')
+        loadItemBD()
+        setFirstModal(false)
+        setSecondModal(false)
+      })
+      .catch(err => alert(err))
+    }else{
+      await saveRealm(item, 2, positionCategory)
+      .then(() => {
+        setNameItemSelected('')
+        setUriItemSelected(' ')
+        loadItemBD()
+        setFirstModal(false)
+        setSecondModal(false)
+      })
+      .catch(err => alert(err))
+    }
+  }
 
-        </TouchableOpacity>
-      </View>
-    );
-  };
+  BackHandler.addEventListener( //Quando o botão de voltar do celular é pressionado
+    'hardwareBackPress', () => {
+      console.log("[hardwareBackPress] - Pressed")
+      if(isCategory){ //Se estiver nas categorias perguntar se o usuário quer fechar o aplicativo
+        Alert.alert("Sair", "Deseja sair do aplicativo?", [
+          {text: "Sim", onPress:() => {
+            console.log("[hardwareBackPress] - Exiting app...")
+            BackHandler.exitApp()
+          }},
+          {text: "Não", onPress: () => {
+            console.log("[hardwareBackPress] - Exit Cancel")
+          }}
+        ])
+      }else{ //Se não apenas recarrega o banco de dados
+        console.log("[hardwareBackPress] - Loading itens")
+        loadItemBD()
+      }
+      return true
+    }
+  )
 
-  addTTS = obj => { // Adicionar item na barra TTs
-    const newData = {
+  function setItem(item){ //Abrir as imagens da categoria
+    console.log(`[SetItem] - Set data in category ${item.name}`)
+    const dataItem = data[data.findIndex(obj => obj.id === item.id)].images;
+
+    const iconAdd = {
+      id: Math.random(),
+      name: "Adicionar",
+      uri: require('./icons/icon_add.png'),
+      isAdd: true,
+    }
+
+    let newData = []
+    newData.push(iconAdd)
+    newData.push(...dataItem)
+
+    setIdCategory(item.id)
+    setPositionCategory(data.findIndex(obj => obj.id === item.id))
+    setData(newData)
+    setIsCategory(false)
+  }
+
+  async function handlerDeleteItem(item){ //Deletando item do banco de dados
+    await deleteItem(item)
+    .then(() => loadItemBD())
+    .catch(err => console.log(err))
+  }
+
+  function addTTs(obj){ //Add item > FlatList> ViewTTS
+    console.log(`[addTTs] - Add "${obj.name}" in TTs`)
+    const newItemTTs = {
       id: Math.random() * 10,
       name: obj.name,
       uri: obj.uri,
       idCategory: obj.idCategory,
       isCategory: false,
-    };
+    }
+    let newImagesTTS = imagesTTs;
+    newImagesTTS.push(newItemTTs) 
+    
+    let newTextTTs = `${text} ${newItemTTs.name}`
+    setImagesTTs(newImagesTTS)
+    setText(newTextTTs)
+  }
 
-    let {text} = this.state;
-    text = `${text} ${newData.name}`;
-    this.setState({text});
-    const tempImage = this.state.imagesTTS;
-    tempImage.push(newData);
-
-    this.setState({imagesTTS: tempImage});
-  };
-
-  renderTTS = obj => { // Renderizar itens da barra TTs
-    return (
-      <View style = {styles.imagesTTS}>
+  function renderItem({item}){ //Render > Flatlist >  ViewItens
+    if(item.isAdd){ //Implementar add Image
+    return(
+        <View style={styles.item}>
+          <TouchableOpacity
+              onPress={() => {
+                setFirstModal(true)
+              }}
+          >
+              <Image style={styles.images} source={require('./icons/icon_add.png')}/>
+              <Text style={styles.textItem}>{item.name}</Text>
+          </TouchableOpacity>
+        </View>
+    );
+    }
+    if(item.isCategory){
+    return(
+        <View style={styles.item}>
+          <TouchableOpacity
+              onPress={() => setItem(item)}
+              onLongPress={() => 
+              Alert.alert('Apagar', `Apagar categoria ${item.name}?`,[
+                  {text: 'Sim', onPress: () => handlerDeleteItem(item)},
+                  {text: 'Não'},
+              ])  
+              }
+              delayLongPress={300}>
+              <Image style={styles.images} source={{uri: item.uri}}/>
+              <Text style={styles.textItem}>{item.name}</Text>
+          </TouchableOpacity>
+        </View>
+    );
+    }
+    return(
+    <View style={styles.item}>
         <TouchableOpacity
-          onLongPress={item =>
-            Alert.alert('Apagar', 'Deseja apagar?', [
-              {text: 'Sim', onPress: () => this.deleteTTs(item)},
+          onPress={() => addTTs(item)}
+          onLongPress={() => 
+          Alert.alert('Apagar', `Apagar imagem ${item.name}?`,[
+              {text: 'Sim', onPress: () => handlerDeleteItem(item)},
               {text: 'Não'},
-            ])
+          ])  
           }
-          delayLongPress={1500}>
-          <Image
+          delayLongPress={300}>
+          <Image style={styles.images} source={{uri: item.uri}}/>
+          <Text style={styles.textItem}>{item.name}</Text>
+
+        </TouchableOpacity>
+    </View>
+    );
+}
+
+  function renderTTS(obj) { // Render > Flatlist > ViewTTS
+    return(
+      <View>
+        <TouchableOpacity
+        onLongPress={() =>
+          Alert.alert('Apagar', 'Deseja apagar?', [
+            {text: 'Sim', onPress: () => deleteTTS(obj.item)},
+            {text: 'Não'},
+          ])
+        }
+        delayLongPress={1500}>
+        
+        <Image
             style={styles.imagesTTS}
             source={{uri: obj.item.uri}}
             />
-          <Text style={styles.textItens}>{obj.item.name}</Text>
+          <Text style={styles.textItemTTS}>{obj.item.name}</Text>
         </TouchableOpacity>
       </View>
     );
-  };
+  }
 
-  deleteTTs = obj => { // Deletar itens da barra TTs
-    const temp = this.state.imagesTTS;
-    if (obj) {
-      temp.pop();
-    } else {
-      temp.pop();
-    }
-    this.setState({imagesTTS: temp});
-  };
+  function handleSpeak(){ //Funcionalidade de falar
+    let text = new String()
+    imagesTTs.forEach(item => {
+      text = `${text} ${item.name}`
+    })
+    console.log(`[handleSpeak] - Speak "${text}"`)
+    speak(text)
+  }
 
-  handleSpeak = () => {
-    const temp = this.state.imagesTTS;
-    let text = '';
-    temp.forEach(item => {
-      text = `${text} ${item.name}`;
-    });
-    speak(text);
-  };
-
-  chooseFile = (option) => { //Image Picker
-    var options = {
-      title: 'Selecionar Imagem',
-      takePhotoButtonTitle: 'Tirar uma foto',
-      chooseFromLibraryButtonTitle: 'Escolher da galeria',
-      quality: 1,
-      noData: true,
-      storageOptions: {
-        skipBackup: true,
-        path: 'images',
-      },
-    };
-
-    if(option === 1){
-      ImagePicker.launchCamera(options, response => {
-        if (response.error) {
-          alert('ImagePicker Error: ', response.error);
-        } else {
-          if(response.path){
-            ImageResizer.createResizedImage(response.path, 800, 600, 'JPEG', 100)
-            .then(({uri}) => {
-                ImgToBase64.getBase64String(uri)
-                .then(base64String => {
-                  this.setState({uri: 'data:image/jpeg;base64,' + base64String})
-                }).catch(err => {alert(err)})
-            }).catch(err => alert(err))
-          }
-        }
-      });
-      this.setState({select: false})
+  function deleteTTS(obj){ //Delete item > Flatlist > viewTTS
+    let newItensTTs = imagesTTs
+    if(obj){
+      console.log(`[deleteTTS] - Deleting item ${obj.name} on TTS`)
+      newItensTTs = imagesTTs.filter(item => item.id !== obj.id)
     }else{
-      ImagePicker.launchImageLibrary(options, response => {
-        if (response.error) {
+      newItensTTs.pop()
+    }
+    setImagesTTs([...newItensTTs])
+    
+  }
+
+  function selectMediaCamera(){ //Abrir camera para selecionar item
+    ImagePicker.launchCamera(optionsImagePicker, response => {
+      if (response.error) {
           alert('ImagePicker Error: ', response.error);
-        } else {
-          if(response.path){
-            ImageResizer.createResizedImage(response.path, 800, 600, 'JPEG', 100)
-            .then(({uri}) => {
-              ImgToBase64.getBase64String(uri)
-              .then(base64String => {
-                this.setState({uri: 'data:image/jpeg;base64,' + base64String})
-
-              }).catch(err => alert(err))
-            }).catch(err => alert(err))
-          }
+      }else {
+        if(response.path){
+        ImageResizer.createResizedImage(response.path, 800, 600, 'JPEG', 100)
+        .then(({uri}) => {
+            ImgToBase64.getBase64String(uri)
+            .then(base64String => {
+                let uri = 'data:image/jpeg;base64,' + base64String
+                setUriItemSelected(uri)
+            }).catch(err => {alert(err)})
+        }).catch(err => alert(err))
         }
-      });
-      this.setState({select: false})
-    }
-  };
-
-  handleCancelModal = () => { //Cancelar o modal
-    this.setState({select: true})
-    this.setState({isVisible: false})
-    this.setState({uri: ' '})
-    this.setState({name: ''})
+      }
+    });
   }
 
-  async handleSaveRealm() { //Salvar no banco de dados
-    let item = {
-      name: this.state.name,
-      uri: this.state.uri,
-      idCategory: this.state.idCategory
-    }
-    if (item.name === ' ' || item.uri === ' '){
-      return Alert.alert("Erro ao adicionar!", "Precisa adicionar uma imagem e um nome.")
-    }
-    if (this.state.isCategory){
-      if(await saveRealm(item, 1, this.state.positionCategory)){
-        this.setState({name: ' '})
-        this.setState({uri: ' '})
-        this.loadRealm()
-        this.handleCancelModal()
+  function selectMediaGallery(){ //Abrir galeria para selecionar item
+    ImagePicker.launchImageLibrary(optionsImagePicker, response => {
+      if (response.error) {
+          alert('ImagePicker Error: ', response.error);
+      }else {
+        if(response.path){
+        ImageResizer.createResizedImage(response.path, 800, 600, 'JPEG', 100)
+        .then(({uri}) => {
+            ImgToBase64.getBase64String(uri)
+            .then(base64String => {
+                let uri = 'data:image/jpeg;base64,' + base64String
+                setUriItemSelected(uri)
+            }).catch(err => {alert(err)})
+        }).catch(err => alert(err))
+        }
       }
-    }else {
-      if(await saveRealm(item, 2, this.state.positionCategory)){
-        this.setState({name: ' '})
-        this.setState({uri: ' '})
-        this.loadRealm()
-        this.handleCancelModal()
-      }
-    }
+    });
   }
 
 
+  return (
+    <View style={styles.container}> 
+      {/* View Principal */}
+      {/* FirstModal */}
+      <Modal 
+        isVisible={firstModal}
+        onBackButtonPress={() => {
+          setFirstModal(false)
+        }}
+      >
+        <View style={styles.Modal}>
+          <Text style={styles.modalTopAndButtonText}>Adicionar</Text>
 
-  
-  render() { //Render princial
-    const columns = 4;
-    return (
-      <>
-      <Modal isVisible = {this.state.isVisible}
-      style={{
-        maxHeight: 500,
-        maxWidth: 500,
-        alignSelf: 'center',}}
-        onBackButtonPress = {() => this.handleCancelModal()}
-        >
-          
-        <View style={styles.container}>
-        {
-          this.state.select ? 
-        <View>
-          <View style={styles.viewTitle}>
-            <Text style={styles.viewTitleText}>Adicionar</Text>
+          <View style={styles.firstModalViewIcons}>
+            <TouchableOpacity onPress={() =>{
+              setCameraOrGallery("Câmera")
+              selectMediaCamera()
+              setSecondModal(true)
+              
+              }}>
+              <Image style={styles.firstModalIcon} source={require('./icons/icon_camera.png')}/>
+              <Text style={styles.firstModalIconText}>Câmera</Text>          
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() =>{
+              setCameraOrGallery("Galeria")
+              selectMediaGallery()
+              setSecondModal(true)
+              }}>
+              <Image style={styles.firstModalIcon} source={require('./icons/icon_gallery.png')}/>
+              <Text style={styles.firstModalIconText}>Galeria</Text>
+            </TouchableOpacity>
           </View>
-          <View style={styles.viewMiddle}>
-            <View style={styles.viewMiddleIcon} >
-              <TouchableOpacity onPress={() => this.chooseFile(1)}>
-                <Image style ={styles.iconImage} source={require('./icons/icon_camera.png')} />
-              </TouchableOpacity>
-                <Text style={styles.middleIconText} >Câmera</Text>
-            </View>
-            <View style={styles.viewMiddleIcon}>
-              <TouchableOpacity onPress={() => this.chooseFile(2)}>
-                <Image style ={styles.iconImage} source={require('./icons/icon_gallery.png')} />
-              </TouchableOpacity>
-                <Text style={styles.middleIconText}>Galeria</Text>
-            </View>
-          </View>
-          <View style={styles.viewBottom}>
-              <TouchableOpacity style = {styles.viewBottomItem} onPress = {() => this.handleCancelModal()}>
-                <Text style={styles.textadd}>Cancelar</Text>
-              </TouchableOpacity>
-          </View>
-        </View> 
-        : //Se o Select for falso
-        <View style={styles.container}>
-          <View style={styles.viewTitle}>
-                <Text style={styles.AddCatg}>Adicionar</Text>
-          </View>
-          <View style={styles.viewMiddle}>
-            <View style = {styles.viewMiddleItem}>
-              <View style={{alignItems:'center'}}>
-                <View style={styles.viewImage}>
-                  <Image style={styles.image} source = {{uri: this.state.uri}}/>
-                </View>
-              </View>
-              <View style = {styles.viewMiddleInput}>
-                <Text style={styles.AddNome}>Nome: </Text>
-                <TextInput 
-                style={styles.input}
-                value={this.state.name} 
-                onChangeText={text => this.setState({name: text})}
-              />
-              </View>
-            </View>
-          </View>
-          <View style={styles.viewBottom}>
-              <TouchableOpacity style = {styles.viewBottomItem} onPress = {() => this.handleCancelModal()}>
-                <Text style={styles.AddCatg}>Cancelar</Text>
-              </TouchableOpacity>
-            <TouchableOpacity style = {styles.viewBottomItem} onPress={() => this.handleSaveRealm()}>
-                <Text style={styles.AddCatg}>Adicionar</Text>
-              </TouchableOpacity>
-          </View>
+
+          <TouchableOpacity style={styles.firstModalButton} 
+            onPress={() => setFirstModal(false)}
+          >
+            <Text style={styles.modalTopAndButtonText}>Cancelar</Text>
+          </TouchableOpacity>
         </View>
-        }
-      </View>
       </Modal>
-      <>
-        <View style={styles.TTs}>
-          <FlatList
-            style={styles.flatListTTS}
-            data={this.state.imagesTTS}
-            extraData={this.state}
-            horizontal
-            renderItem={this.renderTTS}
-            keyExtractor={item => String(item.id)}
+
+      {/* SecondModal */}
+      <Modal
+        isVisible={secondModal}
+        onBackButtonPress={() => {
+          setSecondModal(false)
+          setNameItemSelected('')
+          setUriItemSelected(' ')
+        }}
+      >
+        <View style={styles.Modal}>
+        <Text style={styles.modalTopAndButtonText}>Adicionar da {cameraOrGallery}</Text>
+
+          {uriItemSelected === ' ' 
+          ? 
+            <TouchableOpacity onPress={() => {
+              if(cameraOrGallery === 'Câmera'){
+                selectMediaCamera()
+              }else if (cameraOrGallery === 'Galeria'){
+                selectMediaGallery()
+              }
+            }}>
+              <Image style={styles.secondModalImageSelected} source={require('./icons/icon_add.png')}/>
+            </TouchableOpacity>
+          :
+          <TouchableOpacity onPress={() => {
+            if(cameraOrGallery === 'Câmera'){
+              selectMediaCamera()
+            }else if (cameraOrGallery === 'Galeria'){
+              selectMediaGallery()
+            }
+          }}>
+            <Image style={styles.secondModalImageSelected} source={{uri: uriItemSelected}}/>
+
+          </TouchableOpacity>
+
+          }
+
+
+
+          <Text style={styles.secondModalImageText}>Nome:</Text>
+          <TextInput 
+            style={styles.secondModalInput}
+            value={nameItemSelected}
+            onChangeText={name => setNameItemSelected(name)}
+          />
+
+        <View style={styles.secondModalViewBottom}>
+
+          <TouchableOpacity style={styles.secondModalButton} onPress={() => {
+            setFirstModal(false)
+            setSecondModal(false)
+            setNameItemSelected('')
+            setUriItemSelected(' ')
+            }}>
+            <Text style={styles.modalTopAndButtonText}>Cancelar</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.secondModalButton}
+            onPress={() => handleSaveRealm()}
+          >
+            <Text style={styles.modalTopAndButtonText}>Adicionar</Text>
+          </TouchableOpacity>
+
+        </View>
+
+        </View>
+      </Modal>
+
+      <View style={styles.viewTTS}>
+        {/* View TTS */}
+        <FlatList
+          style={styles.flatListTTS}
+          data={imagesTTs}
+          horizontal
+          renderItem={renderTTS}
+          keyExtractor={item => String(item.id)}
+        />
+        <View styles={styles.viewIconsTTS}>
+          <TouchableOpacity onPress={() => handleSpeak()}>
+            <Image
+              style={styles.iconsTTS}
+              source={require('./icons/icon_play.png')}
             />
-          <View style={styles.TTsView}>
-            <TouchableOpacity onPress={() => this.handleSpeak()}>
-              <Image
-                style={styles.iconsTTS}
-                source={require('./icons/play.png')}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => deleteTTS()}
+            onLongPress={() =>
+              Alert.alert('Apagar', 'Deseja apagar tudo?', [
+                {text: 'Sim', onPress: () => {
+                  console.log(`Deleting All items in TTs`)
+                  setImagesTTs([])
+                }},
+                {text: 'Não'},
+              ])
+            }
+            delayLongPress={1500}>
+            <Image
+              style={styles.iconsTTS}
+              source={require('./icons/icon_excluir.png')}
               />
             </TouchableOpacity>
-
-            <TouchableOpacity
-              onPress={() => this.deleteTTs()}
-              onLongPress={() =>
-                Alert.alert('Apagar', 'Deseja apagar tudo?', [
-                  {text: 'Sim', onPress: () => this.setState({imagesTTS: []})},
-                  {text: 'Não'},
-                ])
-              }
-              delayLongPress={1500}>
-              <Image
-                style={styles.iconsTTS}
-                source={require('./icons/exclu.png')}
-                />
-            </TouchableOpacity>
           </View>
-        </View>
-        <SafeAreaView style={styles.item}>
-          <FlatList
-          // createRows(this.state.data, columns)
-            // data = {this.createRows(this.state.data, columns)}
-            data={this.state.data}
-            keyExtractor={item => String(item.id)}
-            renderItem={this.renderItem}
-            extraData={this.state}
-            numColumns={columns}
-            />
-        </SafeAreaView>
-      </>
-      </>
-    );
-  }
-};
+      </View>
+      <View style={styles.viewItens}>
+        {/* Views corpo */}
+        <FlatList 
+          contentContainerStyle={styles.flatlistItem}
+          data ={data}
+          renderItem = {renderItem}
+          numColumns={4}
+          keyExtractor = {(item) => String(item.id)}
+        />
+      </View>
+    </View>
+  );
+}
+
+export default HomePage;

@@ -11,11 +11,14 @@ export default function getRealm() {
 }
 
 export async function deleteItem(item){
+  console.log("[deleteItem] - Init")
+
   const realm = await getRealm()
   try{
     realm.write(() => {
       realm.delete(item)
     });
+    console.log("[deleteItem] - Item deleted")
     Alert.alert('Apagar', 'Apagado com sucesso')
   }catch (err){
     alert(err)
@@ -76,4 +79,29 @@ export async function saveRealm(category, option, positionCategory){ //Salvar ca
   }catch (err){
     Alert.alert('Erro', 'É necessário adicionar uma imagem e um nome')
   }
+}
+
+export async function loadRealm(data){
+  console.log("[loadRealm] - Init")
+  
+  const realm = await getRealm();
+
+  const add = {
+    id: Math.random(),
+    name: "Adicionar",
+    uri: require('../pages/Home/icons/icon_add.png'),
+    isAdd: true,
+  };
+
+  // const add = {}
+
+  let item = []
+
+  item.push(add);
+  // item.push(data)
+  item.push(...realm.objects('Category'))
+  console.log("[loadRealm] - Done")
+
+  return item
+
 }
