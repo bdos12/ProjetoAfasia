@@ -7,7 +7,7 @@ const styles = StyleSheet.create({
   container:{ //Container principal
     height: deviceHeight,
     width: deviceWidth,
-    backgroundColor: "#e1e1e1",
+    backgroundColor: "#CCEEFF",
     flexDirection: 'column',
   },
 
@@ -15,7 +15,9 @@ const styles = StyleSheet.create({
 
   viewTTS: { //Container do TTS
     height: deviceHeight * 0.23,
-    backgroundColor: "#c1c1c1",
+    backgroundColor: "#ffff",
+    borderWidth: 5,
+    borderColor: "#3581AE", 
     flexDirection: 'row',
   },
 
@@ -89,11 +91,13 @@ textItem: { //Text Itens > RenderItem > flatList > viewItens
   Modal: {
     width: deviceWidth * 0.4,
     height: deviceWidth * 0.4,
-    backgroundColor: "#e1e1e1",
+    backgroundColor: "#fff",
     alignSelf: 'center',
     marginTop: '10%',
-    borderColor: '#d1d1d1',
-    borderWidth: 2
+    borderTopColor: 'rgba(0,0,0,0.9)',
+    borderRightColor:'rgba(0,0,0,0.9)',
+    borderTopWidth: 10,
+    borderRightWidth:10,
   },
   modalTopAndButtonText: {
     textAlign:'center',
@@ -123,7 +127,9 @@ textItem: { //Text Itens > RenderItem > flatList > viewItens
   firstModalButton: {
     flex: 1,
     marginTop: '10%',
-    backgroundColor: '#f0f0f0'
+    backgroundColor: '#fff',
+    borderTopColor:"#00042F",
+   borderTopWidth:2,
   },
 
 
@@ -160,6 +166,7 @@ textItem: { //Text Itens > RenderItem > flatList > viewItens
   secondModalButton: {
     flex: 1,
   },
+  
 })  
   
 export default styles;

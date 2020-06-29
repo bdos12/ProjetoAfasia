@@ -3,7 +3,6 @@ import {Alert} from 'react-native'
 
 import CategorySchema from './schemas/CategorySchema'
 import ImagesSchema from './schemas/ImagesSchema'
-
 import imageRecognition from '../TensorFlow'
 
 export default function getRealm() {
@@ -13,16 +12,16 @@ export default function getRealm() {
 }
 
 export async function deleteItem(item){
-  console.log("[deleteItem] - Init")
-
+  console.log(`[deleteItem] - deleting item \"${item.name}\"`)
   const realm = await getRealm()
   try{
     realm.write(() => {
       realm.delete(item)
     });
-    console.log("[deleteItem] - Item deleted")
+    console.log(`[deleteItem] - Item \"${item.name}\" deleted`)
     Alert.alert('Apagar', 'Apagado com sucesso')
   }catch (err){
+    console.log(`[deleteItem] - Error delete item \"${item.name}\"`)
     alert(err)
   }
 }
@@ -48,7 +47,7 @@ export async function saveRealm(category, option, positionCategory, imagePath){ 
             name: category.name,
             uri: category.uri,
             isCategory: false,
-            description: description
+            description: description,
           },
         ],
         isCategory: true,
@@ -72,16 +71,15 @@ export async function saveRealm(category, option, positionCategory, imagePath){ 
           uri: category.uri,
           idCategory: category.idCategory,
           isCategory: false,
-          description: description
-
+          description: description,
         }
+        
         realm.write(() => {
           realm.objects('Category')[id - 1].images.push(data)
         });
         Alert.alert('Sucesso','Imagem adicionado com sucesso')
         return true
     }
-    
 
   }catch (err){
     console.log(err)
@@ -101,8 +99,6 @@ export async function loadRealm(data){
     isAdd: true,
   };
 
-  // const add = {}
-
   let item = []
 
   item.push(add);
@@ -111,5 +107,4 @@ export async function loadRealm(data){
   console.log("[loadRealm] - Done")
 
   return item
-
 }

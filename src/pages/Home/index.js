@@ -153,6 +153,7 @@ const HomePage = () => {
     console.log(`[addTTs] - Add "${obj.name}" in TTs`)
     const newItemTTs = {
       id: Math.random() * 10,
+      realId: obj.id,
       name: obj.name,
       uri: obj.uri,
       idCategory: obj.idCategory,
@@ -167,7 +168,7 @@ const HomePage = () => {
   }
 
   function renderItem({item}){ //Render > Flatlist >  ViewItens
-    if(item.isAdd){ //Implementar add Image
+    if(item.isAdd){
     return(
         <View style={styles.item}>
           <TouchableOpacity
@@ -177,7 +178,6 @@ const HomePage = () => {
           >
               <Image style={styles.images} source={require('./icons/icon_add.png')}/>
               <Text style={styles.textItem}>{item.name}</Text>
-              <Text style={styles.textItem}>{item.description}</Text>
 
           </TouchableOpacity>
         </View>
@@ -224,6 +224,7 @@ const HomePage = () => {
 }
 
   function renderTTS(obj) { // Render > Flatlist > ViewTTS
+    // console.log(imagesTTs.findIndex(e => e.realId ))
     return(
       <View>
         <TouchableOpacity
@@ -232,7 +233,7 @@ const HomePage = () => {
             {text: 'Sim', onPress: () => deleteTTS(obj.item)},
             {text: 'Não'},
           ])
-        }
+        }   
         delayLongPress={1500}>
         
         <Image
@@ -240,6 +241,8 @@ const HomePage = () => {
             source={{uri: obj.item.uri}}
             />
           <Text style={styles.textItemTTS}>{obj.item.name}</Text>
+          {/* <Text style={styles.textItemTTS}>{obj.item.realId}</Text> */}
+
         </TouchableOpacity>
       </View>
     );
