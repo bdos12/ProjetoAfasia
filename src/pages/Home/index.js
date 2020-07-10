@@ -16,7 +16,7 @@ import ImageResizer from 'react-native-image-resizer';
 import ImgToBase64 from 'react-native-image-base64';
 import { deleteItem, saveRealm, loadRealm } from '../../services/realm'
 import speak from '../../services/TTs';
-import imageRecognition from '../../services/TensorFlow'
+import getLocalPlace from '../../services/places'
 
 
 import styles from './styles'
@@ -50,6 +50,7 @@ const HomePage = () => {
   useEffect(() => {
     console.log("[useEffect] - call function loadItemBD")
     loadItemBD()
+    getLocalPlace()
   }, [])
   
   async function loadItemBD(){ // Carregar itens do banco de dados
